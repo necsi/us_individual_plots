@@ -1,0 +1,52 @@
+id,publication,state,code,col,row
+1,NPR,Alaska,AK,2,1
+2,NPR,Hawaii,HI,2,8
+3,NPR,Washington,WA,3,3
+4,NPR,Oregon,OR,3,4
+5,NPR,California,CA,3,5
+6,NPR,Idaho,ID,4,3
+7,NPR,Nevada,NV,4,4
+8,NPR,Utah,UT,4,5
+9,NPR,Arizona,AZ,4,6
+10,NPR,Montana,MT,5,3
+11,NPR,Wyoming,WY,5,4
+12,NPR,Colorado,CO,5,5
+13,NPR,New Mexico,NM,5,6
+14,NPR,North Dakota,ND,6,3
+15,NPR,South Dakota,SD,6,4
+16,NPR,Nebraska,NE,6,5
+17,NPR,Kansas,KS,6,6
+18,NPR,Oklahoma,OK,6,7
+19,NPR,Texas,TX,6,8
+20,NPR,Minnesota,MN,7,3
+21,NPR,Iowa,IA,7,4
+22,NPR,Missouri,MO,7,5
+23,NPR,Arkansas,AR,7,6
+24,NPR,Louisiana,LA,7,7
+25,NPR,Illinois,IL,8,3
+26,NPR,Indiana,IN,8,4
+27,NPR,Kentucky,KY,8,5
+28,NPR,Tennessee,TN,8,6
+29,NPR,Mississippi,MS,8,7
+30,NPR,Wisconsin,WI,9,3
+31,NPR,Ohio,OH,9,4
+32,NPR,West Virginia,WV,9,5
+33,NPR,North Carolina,NC,9,6
+34,NPR,Alabama,AL,9,7
+35,NPR,Michigan,MI,10,3
+36,NPR,Pennsylvania,PA,10,4
+37,NPR,Virginia,VA,10,5
+38,NPR,South Carolina,SC,10,6
+39,NPR,Georgia,GA,10,7
+40,NPR,New York,NY,11,3
+41,NPR,New Jersey,NJ,11,4
+42,NPR,Maryland,MD,11,5
+43,NPR,District of Columbia,DC,11,6
+44,NPR,Florida,FL,11,8
+45,NPR,Vermont,VT,12,2
+46,NPR,Rhode Island,RI,12,3
+47,NPR,Connecticut,CT,12,4
+48,NPR,Delaware,DE,12,5
+49,NPR,Maine,ME,13,1
+50,NPR,New Hampshire,NH,13,2
+51,NPR,Massachusetts,MA,13,3
