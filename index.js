@@ -9,10 +9,10 @@ var csv_arr = []; //global array to hold certain values from csv file
 fillArr();  //populates csv array [{id, change, old_color},{id, change, old_color},{id, change, old_color},...]
 
 var margin = {top:20, right:20, bottom:20, left:20},
-width = 1200 - margin.left - margin.right,
-height = 700 - margin.top - margin.bottom;
-  // width = window.innerWidth - margin.left - margin.right,
-  // height = window.innerHeight - margin.top - margin.bottom;
+// width = 1200 - margin.left - margin.right,
+// height = 700 - margin.top - margin.bottom;
+  width = window.innerWidth - margin.left - margin.right,
+  height = window.innerHeight - margin.top - margin.bottom;
 
 
 // calculate cellSize based on dimensions of svg
