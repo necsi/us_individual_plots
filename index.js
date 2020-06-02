@@ -9,8 +9,10 @@ var csv_arr = []; //global array to hold certain values from csv file
 fillArr();  //populates csv array [{id, change, old_color},{id, change, old_color},{id, change, old_color},...]
 
 var margin = {top:20, right:20, bottom:20, left:20},
-  width = window.innerWidth - margin.left - margin.right,
-  height = window.innerHeight - margin.top - margin.bottom;
+width = 1200 - margin.left - margin.right,
+height = 700 - margin.top - margin.bottom;
+  // width = window.innerWidth - margin.left - margin.right,
+  // height = window.innerHeight - margin.top - margin.bottom;
 
 
 // calculate cellSize based on dimensions of svg
@@ -50,7 +52,8 @@ var column = row.selectAll(".cell")
     .enter()
     .append("rect")
     .attr("class", "cell")
-    .attr("x", function(d) { return d.x + width/cols; }) 
+    // .attr("x", function(d) { return d.x + width/cols; }) 
+    .attr("x", function(d) { return d.x + width; }) 
     .attr("y", function(d) { return d.y; })
     .attr("width", function(d) { return d.width; })
     .attr("height", function(d) { return d.height; })
@@ -90,7 +93,9 @@ function ready(error, data, links) {
     states.enter()
         .append("rect")
           .attr("class", function(d) {return "state " + d.code; })
-          .attr("x", function(d) { return width/cols+(d.col - 1) * cellSize; })
+          // .attr("x", function(d) { return width/cols+(d.col - 1) * cellSize; })
+          // .attr("y", function(d) { return (d.row - 1) * cellSize; })
+          .attr("x", function(d) { return (d.col - 1) * cellSize; })
           .attr("y", function(d) { return (d.row - 1) * cellSize; })
           .attr("width", cellSize)
           .attr("height", cellSize)
@@ -115,7 +120,8 @@ function ready(error, data, links) {
         .append("text")
           .attr("class", function(d) { return "label " + d.code; })
           .attr("x", function(d) {
-            return (width/cols + (d.col - 1) * cellSize) + (cellSize / 2 - margin.left);
+            // return (width/cols + (d.col - 1) * cellSize) + (cellSize / 2 - margin.left);
+            return ((d.col - 1) * cellSize) + (cellSize / 2 - margin.left);
           })
           .attr("y", function(d) {
             return ((d.row - 1) * cellSize) + (cellSize /2 - margin.top);
@@ -139,7 +145,8 @@ function ready(error, data, links) {
               var color = getColor(id); //determines appropriate color based on preloaded csv file
               x = ((d.col - 1) * cellSize) + (cellSize / 2 - 10);
               y = ((d.row - 1) * cellSize) + (cellSize /2 - 10);
-              populate(x+width/cols, y, d.state, color);
+              // populate(x+width/cols, y, d.state, color);
+              populate(x, y, d.state, color);
             });
           })
   }
