@@ -7,7 +7,6 @@
 
 var csv_arr = []; //global array to hold certain values from csv file
 fillArr();  //populates csv array [{state, color},{state, color}, {state, color},...]
-console.log(csv_arr);
 
 var margin = {top:20, right:20, bottom:20, left:20},
 // width = 1200 - margin.left - margin.right,
@@ -228,12 +227,26 @@ function getColor(state){
       //draw x axis in modal
       g_svg.append("g")
         .attr("transform", "translate(0," + (h - padding) + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+        .attr("dy", ".25em")
+        .attr("dx", "-.8em")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
 
       //draw y axis in modal
       g_svg.append("g")
         .attr("transform", "translate("+padding+",0)")
         .call(yAxis);
+
+      g_svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x",0 - (h / 2))
+        .attr("dy", "1em")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("New Cases");      
 
       //add title to graph
       g_svg.append("text")     
@@ -243,7 +256,8 @@ function getColor(state){
         .style("text-anchor", "middle")
         .text(data[selectedIndex].province)
         .style("font-size", "24px")
-        .style("fill", "#696969");
+        .style("fill", "#696969");    
+      
     
       //draw line and path 
       const line = d3.line()
