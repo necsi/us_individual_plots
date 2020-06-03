@@ -7,6 +7,7 @@
 
 var csv_arr = []; //global array to hold certain values from csv file
 fillArr();  //populates csv array [{state, color},{state, color}, {state, color},...]
+console.log(csv_arr);
 
 var margin = {top:20, right:20, bottom:20, left:20},
 // width = 1200 - margin.left - margin.right,
@@ -301,7 +302,7 @@ function getColor(state){
 */
 function fillArr(){
   d3.csv("state-colors.csv", function(data) {
-    for(var i = 1; i < data.length; i++){
+    for(var i = 0; i < data.length; i++){
       csv_arr.push([data[i].province, data[i].color]); //id, change, old color
     }
   });
