@@ -6,7 +6,7 @@
 
 
 var csv_arr = []; //global array to hold certain values from csv file
-fillArr();  //populates csv array [{id, change, old_color},{id, change, old_color},{id, change, old_color},...]
+fillArr();  //populates csv array [{state, color},{state, color}, {state, color},...]
 
 var margin = {top:20, right:20, bottom:20, left:20},
 // width = 1200 - margin.left - margin.right,
@@ -102,14 +102,10 @@ function ready(error, data, links) {
           .on("click", function(d) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
-            if (square.classed("active")) {
-              d3.json("https://raw.githubusercontent.com/obuchel/classification/master/classification/data2_8.json", function(data) {
-                var selectedIndex = data.findIndex(obj => obj.province==d.state);
-                var id = data[selectedIndex].id;
-                let color = getColor(id); //determines appropriate color based on id 
-                popUpGraph(d.state, color);
-              });
-           }
+             if (square.classed("active")) {           
+                let color = getColor(d.state); //determines appropriate color based on id 
+                popUpGraph(d.state, color);             
+             }
           });
 
     var labels = gridMap.selectAll(".label")
@@ -139,15 +135,10 @@ function ready(error, data, links) {
     map.enter()
         .append("svg")
           .attr("stateMap", function(d) {           
-            d3.json("https://raw.githubusercontent.com/obuchel/classification/master/classification/data2_8.json", function(data) {
-              var selectedIndex = data.findIndex(obj => obj.province==d.state);
-              var id = data[selectedIndex].id;
-              var color = getColor(id); //determines appropriate color based on preloaded csv file
-              x = ((d.col - 1) * cellSize) + (cellSize / 2 - 10);
-              y = ((d.row - 1) * cellSize) + (cellSize /2 - 10);
-              // populate(x+width/cols, y, d.state, color);
-              populate(x, y, d.state, color);
-            });
+            var color = getColor(d.state); //determines appropriate color based on preloaded csv file
+            x = ((d.col - 1) * cellSize) + (cellSize / 2 - 10);
+            y = ((d.row - 1) * cellSize) + (cellSize /2 - 10);
+            populate(x, y, d.state, color);
           })
   }
 };
@@ -156,16 +147,11 @@ function ready(error, data, links) {
 * getColor: determines corresponding color based on the id given. If there is a change
 *           in color, it returns the changed color, else returns the old color
 */
-function getColor(id){
+function getColor(state){
   for(var i = 0; i < csv_arr.length; i ++){
-    if(csv_arr[i][0] == id){ //find correct province given id 
-      if(csv_arr[i][1] == ""){  //check if Change is empty 
-        return csv_arr[i][2];   //if no change, return old color
+    if(csv_arr[i][0] == state){ //find correct province/state
+        return csv_arr[i][1];   //return color
       }
-      else{
-        return csv_arr[i][1];   //if change, return changed color
-      }
-    }
   }
 }
 
@@ -173,7 +159,8 @@ function getColor(id){
 * popUpGraph: takes in stateName and generates Modal with graph of 
 *             the state selected
 */
-function popUpGraph(stateName, color) {
+ function popUpGraph(stateName, color) {
+  // function popUpGraph(stateName) {
     var modal = document.getElementById("myModal");
 
     // Get the <span> element that closes the modal
@@ -313,9 +300,9 @@ function popUpGraph(stateName, color) {
 *          *This process of preloading is to get around the asynchronous javascript process*
 */
 function fillArr(){
-  d3.csv("https://raw.githubusercontent.com/obuchel/COVID-19_map/master/classification/classification_ids2.csv", function(data) {
+  d3.csv("state-colors.csv", function(data) {
     for(var i = 1; i < data.length; i++){
-      csv_arr.push([data[i].id, data[i].Change, data[i].color_old]); //id, change, old color
+      csv_arr.push([data[i].province, data[i].color]); //id, change, old color
     }
   });
 }
@@ -385,6 +372,7 @@ function calcCellSize(w, h, ncol, nrow) {
 *           based on x y position
 */
 function populate(x, y, state, color){
+  // function populate(x, y, state){
 
     var w = cellSize*.75,
         h = cellSize*.75,
@@ -426,6 +414,7 @@ function populate(x, y, state, color){
         d3.select("svg").append("path")
           .datum(dataset)
           .attr("fill", "none")
+          // .attr("stroke", data[selectedIndex].color)
           .attr("stroke", color)
           .attr("stroke-width", 1.15)
           .attr("transform", "translate(" + [x,y] + ")")  //translate line based on x and y position
