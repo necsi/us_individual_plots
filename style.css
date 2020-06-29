@@ -7,13 +7,12 @@
  body {
   font-family:"avenir next", Arial, sans-serif;
   font-size: 12px;
-  color: #696969; 
+  color: #696969; ;
 }
 
 .state {
   fill: white;
   stroke: #fff;
-  opacity: 0.2;
   cursor: pointer;
 }
 
@@ -31,7 +30,6 @@ p{
 #subtitle{
   font-size: 12px;
 }
-
 
 .modal {
   display: none; /* Hidden by default */
@@ -59,8 +57,9 @@ p{
 .close {
   color: #aaaaaa;
   float: right;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
+  padding: 10px;
 }
 
 .close:hover,
@@ -74,4 +73,16 @@ p{
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+div.tooltip {	
+  position: absolute;			
+  text-align: center;			
+  width: 60px;					
+  height: 28px;					
+  padding: 2px;				
+  font: 12px sans-serif;		
+  background: lightsteelblue;	
+  border: 0px;		
+  border-radius: 8px;			
+  pointer-events: none;			
 }

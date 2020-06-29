@@ -5,15 +5,85 @@
 // resources: https://bl.ocks.org/officeofjane/2c3ed88c4be050d92765de912d71b7c4 for US grid
 
 
-var csv_arr = []; //global array to hold certain values from csv file
+var csv_arr = []; //global array to hold certain state and color values from csv file
 fillArr();  //populates csv array [{state, color},{state, color}, {state, color},...]
 
+var selectOptions = ["Daily New Cases", "Daily New Deaths"]
+// add the options to the button
+d3.select("#selectButton")
+  .selectAll('myOptions')
+  .data(selectOptions)
+  .enter()
+  .append('option')
+  .text(function (d) { return d; }) // text showed in the menu
+  .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+  function indexSelected() {
+
+    var x = document.getElementById("selectButton").selectedIndex;
+    var y = document.getElementById("selectButton").options;
+
+    d3.selectAll("#vis > *").remove(); 
+    svg = d3.select("#vis")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
+    
+    grid = svg.append("g")
+      .attr("class", "gridlines")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");  
+      var row = grid.selectAll(".row")
+      .data(gridData)
+      .enter()
+      .append("g")
+      .attr("class", "row");
+  
+   column = row.selectAll(".cell")
+      .data(function(d) { return d; })
+      .enter()
+      .append("rect")
+      .attr("class", "cell")
+      .attr("x", function(d) { return d.x; }) 
+      .attr("y", function(d) { return d.y; })
+      .attr("width", function(d) { return d.width; })
+      .attr("height", function(d) { return d.height; })
+      .style("fill", "white");
+      
+  
+   gridMap = svg.append("g")
+      .attr("class", "gridmap")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+      // slow the json load intentionally, so we can see it every load
+      setTimeout(function() {
+          // load json data and trigger callback
+          d3.json("./result.json", function(data) {
+              // instantiate chart within callback
+              d3.queue()
+              .defer(d3.csv, "publication-grids.csv")
+              .defer(d3.csv, "links.csv")
+              .defer(setData, data)
+              .defer(selectIndex)
+              .await(ready);
+          });
+      }, 1500);
+
+    function setData(data, callback){
+      callback(null, data)
+    }
+    function selectIndex(callback) {
+      index =  y[x].value;
+      if (index == null){
+        index = 1
+      }
+      callback(null, index);
+    }
+
+  }
+
 var margin = {top:20, right:20, bottom:20, left:20},
-// width = 1200 - margin.left - margin.right,
-// height = 700 - margin.top - margin.bottom;
   width = window.innerWidth - margin.left - margin.right,
   height = window.innerHeight - margin.top - margin.bottom;
-
 
 // calculate cellSize based on dimensions of svg
 var cols = 13;
@@ -22,55 +92,19 @@ var cellSize = calcCellSize(width, height, cols, rows);
 
 // generate grid data with specified number of columns and rows
 var gridData = gridData(13, 8, cellSize);
-
-d3.select("#vis")
-  .attr("align","center");
-
-var svg = d3.select("#vis")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
-
 var g_svg = d3.select("#graphModal")
      .append("svg")
      .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
-    
-// draw gridlines
-var grid = svg.append("g")
-    .attr("class", "gridlines")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var row = grid.selectAll(".row")
-    .data(gridData)
-    .enter()
-    .append("g")
-    .attr("class", "row");
+indexSelected();
 
-var column = row.selectAll(".cell")
-    .data(function(d) { return d; })
-    .enter()
-    .append("rect")
-    .attr("class", "cell")
-    // .attr("x", function(d) { return d.x + width/cols; }) 
-    .attr("x", function(d) { return d.x + width; }) 
-    .attr("y", function(d) { return d.y; })
-    .attr("width", function(d) { return d.width; })
-    .attr("height", function(d) { return d.height; })
-    .style("fill", "white");
-    
+d3.select("#vis")
+  .attr("align","center");
 
-var gridMap = svg.append("g")
-    .attr("class", "gridmap")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.queue()
-    .defer(d3.csv, "publication-grids.csv")
-    .defer(d3.csv, "links.csv")
-    .await(ready);
 
-function ready(error, data, links) {
-
+function ready(error, data, links, jsonData, selectedIndex) {
     var nest = d3.nest()
         .key(function(d) { return d.publication; })
         .entries(data);
@@ -85,16 +119,14 @@ function ready(error, data, links) {
         return d.key == publication;
     });
 
-
     // use a key function to bind rects to states
     var states = gridMap.selectAll(".state")
-        .data(selectPub.values, function(d) { return d.code; });
+        .data(selectPub.values, function(d) {return d.code; });
+
     // draw state rects
     states.enter()
         .append("rect")
           .attr("class", function(d) {return "state " + d.code; })
-          // .attr("x", function(d) { return width/cols+(d.col - 1) * cellSize; })
-          // .attr("y", function(d) { return (d.row - 1) * cellSize; })
           .attr("x", function(d) { return (d.col - 1) * cellSize; })
           .attr("y", function(d) { return (d.row - 1) * cellSize; })
           .attr("width", cellSize)
@@ -102,9 +134,9 @@ function ready(error, data, links) {
           .on("click", function(d) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
-             if (square.classed("active")) {           
+             if (square.classed("active")) {     
                 let color = getColor(d.state); //determines appropriate color based on id 
-                popUpGraph(d.state, color);             
+                popUpGraph(d.state, color, selectedIndex, jsonData);             
              }
           });
 
@@ -116,11 +148,10 @@ function ready(error, data, links) {
         .append("text")
           .attr("class", function(d) { return "label " + d.code; })
           .attr("x", function(d) {
-            // return (width/cols + (d.col - 1) * cellSize) + (cellSize / 2 - margin.left);
-            return ((d.col - 1) * cellSize) + (cellSize / 2 - margin.left);
+            return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left*1.5));
           })
           .attr("y", function(d) {
-            return ((d.row - 1) * cellSize) + (cellSize /2 - margin.top);
+            return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*1.15));
           })
           .style("text-anchor", "middle")
           .text(function(d) { return d.code; });
@@ -138,7 +169,7 @@ function ready(error, data, links) {
             var color = getColor(d.state); //determines appropriate color based on preloaded csv file
             x = ((d.col - 1) * cellSize) + (cellSize / 2 - 10);
             y = ((d.row - 1) * cellSize) + (cellSize /2 - 10);
-            populate(x, y, d.state, color);
+            populate(x, y, d.state, color, selectedIndex, jsonData);
           })
   }
 };
@@ -159,7 +190,8 @@ function getColor(state){
 * popUpGraph: takes in stateName and generates Modal with graph of 
 *             the state selected
 */
- function popUpGraph(stateName, color) {
+ function popUpGraph(stateName, color, selectedIndex, data) {
+  // console.log(data);
   // function popUpGraph(stateName) {
     var modal = document.getElementById("myModal");
 
@@ -197,20 +229,41 @@ function getColor(state){
         h = 400,
         padding = 50;
 
+    var file="./result.json";
+    const dataset = [];
+  // var state;
+    var yAxisLabel;
+    var hoverOverText;
+    if(selectedIndex == 'Daily New Cases'){
+   //   d3.json(file, function(data) {
+        //determine index from JSON corresponding to state name
+        var index = data.findIndex(obj => obj.state==stateName);
+       // state = data[selectedIndex].state;
+        for(var i = 0; i < data[index].dates.length; i++){
+          //pushes date and value into array, similar to x, y coordinates on a graph
+          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_cases[i] }); 
+        }
+   //   });
+      yAxisLabel = 'Daily New Cases';
+      hoverOverText = ' new cases on ';
+    }
+    else if(selectedIndex == 'Daily New Deaths'){
+   //   d3.json(file, function(data) {
+        //determine index from JSON corresponding to state name
+        var index = data.findIndex(obj => obj.state==stateName);
+       // state = data[selectedIndex].state;
+        for(var i = 0; i < data[index].dates.length; i++){
+          //pushes date and value into array, similar to x, y coordinates on a graph
+          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
+        }
+        color = "black";
+        yAxisLabel = 'Daily New Deaths';
+        hoverOverText = ' new deaths on ';
+   //   });
+    }
    
     //opening json file to read data only from the selected index 
-    d3.json("https://raw.githubusercontent.com/obuchel/classification/master/classification/data2_8.json", function(data) {
-      //determine index from JSON corresponding to state name
-      var selectedIndex = data.findIndex(obj => obj.province==stateName);
-      const dataset = [];
-
-      var dates = data[selectedIndex].dates;  
-      let id = data[selectedIndex].id;
-
-      for(var i = 0; i < data[selectedIndex].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%m/%d/%y")(data[selectedIndex].dates[i]), y : data[selectedIndex].value[i] }); 
-      }
+    //  d3.json(file, function(data) {
       // setting time scale for x axis based on dates  
       var xScale = d3.scaleTime()
           .domain(d3.extent(dataset, function(d) { return d.x; }))
@@ -226,7 +279,7 @@ function getColor(state){
 
       //draw x axis in modal
       g_svg.append("g")
-        .attr("transform", "translate(0," + (h - padding) + ")")
+        .attr("transform", "translate("+padding*0.5+"," + (h - padding) + ")")
         .call(xAxis)
         .selectAll("text")
         .attr("dy", ".25em")
@@ -236,7 +289,7 @@ function getColor(state){
 
       //draw y axis in modal
       g_svg.append("g")
-        .attr("transform", "translate("+padding+",0)")
+        .attr("transform", "translate("+padding*1.5+",0)")
         .call(yAxis);
 
       g_svg.append("text")
@@ -246,7 +299,7 @@ function getColor(state){
         .attr("dy", "1em")
         .style("font-size", "14px")
         .style("text-anchor", "middle")
-        .text("New Cases");      
+        .text(yAxisLabel);      
 
       //add title to graph
       g_svg.append("text")     
@@ -254,7 +307,7 @@ function getColor(state){
                 "translate(" + (w/2) + " ," + 
                             (padding-20) + ")")
         .style("text-anchor", "middle")
-        .text(data[selectedIndex].province)
+        .text(stateName)
         .style("font-size", "24px")
         .style("fill", "#696969");    
       
@@ -267,12 +320,33 @@ function getColor(state){
       g_svg.append("path")
         .datum(dataset)
         .attr("fill", "none")
+        .attr("transform", "translate("+padding*0.5+",0)")
         .attr("stroke", color)
-        .attr("stroke-width", 1.15)
+        .attr("stroke-width", 1.5)
         .attr("d", line)
+        
+      const area = d3.area()
+        .x(function(d) { return xScale(d.x); })
+        .y0(h-padding)
+        .y1(function(d) { return yScale(d.y); });
+
+        g_svg.append("path")
+        .datum(dataset)
+        .attr("class", "area")
+        .attr("transform", "translate("+padding*0.5+",0)")
+        .attr("fill", color)
+        .attr("opacity", "0.2")
+        .attr("cursor", "pointer")
+        .attr("d", area);
+
 
       var div = d3.select("#graphInfo").append("div")
         .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "dotted")
+        .style("border-width", "1px")
+        .style("border-radius", "3px")
         .style("opacity", 0);
 
       //place dots to represent all x y coordinates 
@@ -280,12 +354,14 @@ function getColor(state){
         .append("g")
         .selectAll("dot")
         .data(dataset)
+        
         .enter()
         .append("circle")
             .attr("cx", function(d) { return xScale(d.x) } )
             .attr("cy", function(d) { return yScale(d.y) } )
-            .attr("r", 2.5)
+            .attr("r", 2.75)
             .attr("fill", color)
+            .attr("transform", "translate("+padding*0.5+",0)")
 
             //interactive feature to see new cases per day
             .on('mouseover', function (d, i) {
@@ -295,19 +371,24 @@ function getColor(state){
               div.transition()
                     .duration(100)
                     .style("opacity", 1);
-              div.html((Math.round(d.y))+" new cases on "+ d3.timeFormat("%B %d")(d.x))
-                    .style("font-size", "14px");
+              div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
+                    .style("font-size", "12px")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY) + "px")
+                    .style("padding", "3px")
+                    .style("padding-bottom", "15px");
+                    
             })
             .on('mouseout', function (d, i) {
               d3.select(this).transition()
                   .duration('200')
-                  .attr("r", 2.5);
+                  .attr("r", 2.75);
               div.transition()
                   .duration('200')
                   .style("opacity", 0);
             });
 
-      });
+  //   });
   }
 
 /*
@@ -315,9 +396,10 @@ function getColor(state){
 *          *This process of preloading is to get around the asynchronous javascript process*
 */
 function fillArr(){
-  d3.csv("state-colors.csv", function(data) {
+  // d3.csv("state-colors.csv", function(data) {
+    d3.csv("USStateColors.csv", function(data) {
     for(var i = 0; i < data.length; i++){
-      csv_arr.push([data[i].province, data[i].color]); //id, change, old color
+      csv_arr.push([data[i].state, data[i].color]);
     }
   });
 }
@@ -358,7 +440,6 @@ function gridData(ncol, nrow, cellsize) {
   return gridData;
 }
 
-
 /*
 * gridData: function to calculate grid cell size based on width and height of svg
 */
@@ -386,24 +467,35 @@ function calcCellSize(w, h, ncol, nrow) {
 * populate: generates graph for state given and translates axes and coordinates
 *           based on x y position
 */
-function populate(x, y, state, color){
-  // function populate(x, y, state){
+function populate(x, y, state, color, selectedIndex, data){
+  //  var file="./result.json";
+    const dataset = [];
+    if(selectedIndex == 'Daily New Cases'){
+  //    d3.json(file, function(data) {
+        //determine index from JSON corresponding to state name
+        var index = data.findIndex(obj => obj.state==state);
+        for(var i = 0; i < data[index].dates.length; i++){
+          //pushes date and value into array, similar to x, y coordinates on a graph
+          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_cases[i] }); 
+        }
+   //   });
+    }
+    else if(selectedIndex == 'Daily New Deaths'){
+  //    d3.json(file, function(data) {
+        //determine index from JSON corresponding to state name
+        var index = data.findIndex(obj => obj.state==state);
+        for(var i = 0; i < data[index].dates.length; i++){
+          //pushes date and value into array, similar to x, y coordinates on a graph
+          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_deaths[i] }); 
+        }
+        color = "black"
+  //    });
+    }
 
     var w = cellSize*.75,
         h = cellSize*.75,
         margin = { top: 0, right: 7, bottom: 0, left: 7 };
 
-    d3.json("https://raw.githubusercontent.com/obuchel/classification/master/classification/data2_8.json", function(data) {
-      //determine index from JSON corresponding to state name
-      var selectedIndex = data.findIndex(obj => obj.province==state);
-
-      const dataset = [];
-
-      var dates = data[selectedIndex].dates;  
-      for(var i = 0; i < data[selectedIndex].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%m/%d/%y")(data[selectedIndex].dates[i]), y : data[selectedIndex].value[i] }); 
-      }
 
       // setting time scale for x axis based on date
       var xScale = d3.scaleTime()
@@ -414,13 +506,9 @@ function populate(x, y, state, color){
       var yScale = d3.scaleLinear()
           .domain([0, d3.max(dataset, function (d) { return d.y + 1; })])
           .range([h, margin.top]);
-
-      var xAxis = d3.axisBottom(xScale).tickValues([]);
+      
+      var xAxis = d3.axisBottom(xScale).tickValues([]).tickSizeOuter(0);
       var yAxis = d3.axisLeft(yScale).tickValues([]);
-
-      svg.append("g")
-        .attr("transform", "translate(" + [x,y+h] + ")")  //translate x axis based on x and y position
-        .call(xAxis);
 
         const line = d3.line()
           .x(function(d) { return xScale(d.x) })
@@ -429,11 +517,26 @@ function populate(x, y, state, color){
         d3.select("svg").append("path")
           .datum(dataset)
           .attr("fill", "none")
-          // .attr("stroke", data[selectedIndex].color)
           .attr("stroke", color)
-          .attr("stroke-width", 1.15)
+          .attr("stroke-width", 1.5)
           .attr("transform", "translate(" + [x,y] + ")")  //translate line based on x and y position
           .attr("d", line)
-  });
+        
+        const area = d3.area()
+          .x(function(d) { return xScale(d.x); })
+          .y0(h)
+          .y1(function(d) { return yScale(d.y); });
+
+        d3.select("svg").append("path")
+          .datum(dataset)
+          .attr("class", "area")
+          .attr("transform", "translate(" + [x,y] + ")")
+          .attr("fill", color)
+          .attr("opacity", "0.2")
+          .attr("cursor", "pointer")
+          .on("click", function(d) {
+             popUpGraph(state, color, selectedIndex, data);   
+          })
+          .attr("d", area);
 }
 

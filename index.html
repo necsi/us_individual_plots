@@ -10,10 +10,15 @@
 <head>
   <meta charset="utf-8">
   <script src="https://d3js.org/d3.v4.min.js"></script>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <!-- <div class="select" style="text-align:center"> -->
+  <div class="select">
+    <select id="selectButton" class="selectButton" style="font-size: 18px" onchange="indexSelected()"></select>
+  </div>
   <div id="vis"></div>
   <div id="myModal" class="modal">
   <div  class="modal-content">
