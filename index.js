@@ -84,6 +84,8 @@ d3.select("#selectButton")
 var margin = {top:20, right:20, bottom:20, left:20},
   width = window.innerWidth - margin.left - margin.right,
   height = window.innerHeight - margin.top - margin.bottom;
+  // width = 1400 - margin.left - margin.right,
+  // height = 850 - margin.top - margin.bottom;
 
 // calculate cellSize based on dimensions of svg
 var cols = 13;
@@ -225,8 +227,10 @@ function getColor(state){
     modal.style.display = "block";
 
     //setting svg height, width, and margin values
-    var w = 700,
-        h = 400,
+    // var w = 700,
+    //     h = 400,
+    var w = width * 0.5,
+        h = height *0.5,
         padding = 50;
 
     var file="./result.json";
