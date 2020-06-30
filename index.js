@@ -278,7 +278,7 @@ function getColor(state){
           .domain([0, d3.max(dataset, function (d) { return d.y; })])
           .range([h - padding, padding]);
 
-      var xAxis = d3.axisBottom(xScale);
+      var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth) ;
       var yAxis = d3.axisLeft(yScale);
 
       //draw x axis in modal
@@ -326,7 +326,7 @@ function getColor(state){
         .attr("fill", "none")
         .attr("transform", "translate("+padding*0.5+",0)")
         .attr("stroke", color)
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 1)
         .attr("d", line)
         
       const area = d3.area()
@@ -522,7 +522,7 @@ function populate(x, y, state, color, selectedIndex, data){
           .datum(dataset)
           .attr("fill", "none")
           .attr("stroke", color)
-          .attr("stroke-width", 1.5)
+          .attr("stroke-width", 1)
           .attr("transform", "translate(" + [x,y] + ")")  //translate line based on x and y position
           .attr("d", line)
         
