@@ -229,7 +229,7 @@ function getColor(state){
     //setting svg height, width, and margin values
     // var w = 700,
     //     h = 400,
-    var w = width * 0.5,
+    var w = width * 0.9,
         h = height *0.5,
         padding = 50;
 
