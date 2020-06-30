@@ -256,7 +256,7 @@ function getColor(state){
           //pushes date and value into array, similar to x, y coordinates on a graph
           dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
         }
-        color = "black";
+        // color = "black";
         yAxisLabel = 'Daily New Deaths';
         hoverOverText = ' new deaths on ';
    //   });
@@ -488,7 +488,7 @@ function populate(x, y, state, color, selectedIndex, data){
           //pushes date and value into array, similar to x, y coordinates on a graph
           dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_deaths[i] }); 
         }
-        color = "black"
+    //    color = "black"
   //    });
     }
 
