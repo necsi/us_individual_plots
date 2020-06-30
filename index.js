@@ -85,7 +85,7 @@ var margin = {top:20, right:20, bottom:20, left:20},
   width = window.innerWidth - margin.left - margin.right,
   height = window.innerHeight - margin.top - margin.bottom;
   // width = 1400 - margin.left - margin.right,
-  // height = 850 - margin.top - margin.bottom;
+  //height = 850 - margin.top - margin.bottom;
 
 // calculate cellSize based on dimensions of svg
 var cols = 13;
@@ -449,8 +449,8 @@ function gridData(ncol, nrow, cellsize) {
 */
 function calcCellSize(w, h, ncol, nrow) {
   // leave tiny space in margins
-  var gridWidth  = w - 2;
-  var gridHeight = h - 2;
+  var gridWidth  = w-2;
+  var gridHeight = h -2;
   var cellSize;
 
   // calculate size of cells in columns across
