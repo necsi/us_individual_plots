@@ -231,7 +231,7 @@ function getColor(state){
     //     h = 400,
     var w = width * 0.9,
         h = height *0.5,
-        padding = 50;
+        padding = 45;
 
     var file="./result.json";
     const dataset = [];
@@ -276,14 +276,14 @@ function getColor(state){
       // setting linear scale for y axis based on max value 
       var yScale = d3.scaleLinear()
           .domain([0, d3.max(dataset, function (d) { return d.y; })])
-          .range([h - padding, padding]);
+          .range([h, padding]);
 
       var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
       var yAxis = d3.axisLeft(yScale).ticks(5);
 
       //draw x axis in modal
       g_svg.append("g")
-        .attr("transform", "translate("+padding*0.5+"," + (h - padding) + ")")
+        .attr("transform", "translate("+padding*0.5+"," + (h) + ")")
         .call(xAxis)
         .selectAll("text")
         .attr("dy", ".25em")
@@ -298,7 +298,8 @@ function getColor(state){
 
       g_svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0)
+        //.attr("transform", "translate("+ 10 +","+(h/2)+")rotate(-90)")
+        .attr("y", padding*0.25)
         .attr("x",0 - (h / 2))
         .attr("dy", "1em")
         .style("font-size", "14px")
@@ -309,7 +310,7 @@ function getColor(state){
       g_svg.append("text")     
         .attr("transform",
                 "translate(" + (w/2) + " ," + 
-                            (padding-20) + ")")
+                            (20) + ")")
         .style("text-anchor", "middle")
         .text(stateName)
         .style("font-size", "24px")
@@ -331,7 +332,7 @@ function getColor(state){
         
       const area = d3.area()
         .x(function(d) { return xScale(d.x); })
-        .y0(h-padding)
+        .y0(h)
         .y1(function(d) { return yScale(d.y); });
 
         g_svg.append("path")
@@ -363,7 +364,7 @@ function getColor(state){
         .append("circle")
             .attr("cx", function(d) { return xScale(d.x) } )
             .attr("cy", function(d) { return yScale(d.y) } )
-            .attr("r", 2.75)
+            .attr("r", 2)
             .attr("fill", color)
             .attr("transform", "translate("+padding*0.5+",0)")
 
@@ -386,7 +387,7 @@ function getColor(state){
             .on('mouseout', function (d, i) {
               d3.select(this).transition()
                   .duration('200')
-                  .attr("r", 2.75);
+                  .attr("r", 2);
               div.transition()
                   .duration('200')
                   .style("opacity", 0);
