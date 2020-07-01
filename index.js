@@ -278,8 +278,8 @@ function getColor(state){
           .domain([0, d3.max(dataset, function (d) { return d.y; })])
           .range([h - padding, padding]);
 
-      var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth) ;
-      var yAxis = d3.axisLeft(yScale);
+      var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
+      var yAxis = d3.axisLeft(yScale).ticks(5);
 
       //draw x axis in modal
       g_svg.append("g")
