@@ -47,6 +47,7 @@ d3.select("#selectButton")
       .attr("y", function(d) { return d.y; })
       .attr("width", function(d) { return d.width; })
       .attr("height", function(d) { return d.height; })
+      // .style("stroke", "lightgrey")
       .style("fill", "white");
       
   
@@ -129,7 +130,7 @@ function ready(error, data, links, jsonData, selectedIndex) {
     states.enter()
         .append("rect")
           .attr("class", function(d) {return "state " + d.code; })
-          .attr("x", function(d) { return (d.col - 1) * cellSize; })
+          .attr("x", function(d) { return (d.col-1) * cellSize; })
           .attr("y", function(d) { return (d.row - 1) * cellSize; })
           .attr("width", cellSize)
           .attr("height", cellSize)
@@ -150,10 +151,10 @@ function ready(error, data, links, jsonData, selectedIndex) {
         .append("text")
           .attr("class", function(d) { return "label " + d.code; })
           .attr("x", function(d) {
-            return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left*1.5));
+            return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left*0.75));
           })
           .attr("y", function(d) {
-            return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*1.15));
+            return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
           })
           .style("text-anchor", "middle")
           .text(function(d) { return d.code; });
@@ -169,8 +170,8 @@ function ready(error, data, links, jsonData, selectedIndex) {
         .append("svg")
           .attr("stateMap", function(d) {           
             var color = getColor(d.state); //determines appropriate color based on preloaded csv file
-            x = ((d.col - 1) * cellSize) + (cellSize / 2 - 10);
-            y = ((d.row - 1) * cellSize) + (cellSize /2 - 10);
+            x = ((d.col - 1) * cellSize) + (cellSize / 2);
+            y = ((d.row - 1) * cellSize) + (cellSize /2);
             populate(x, y, d.state, color, selectedIndex, jsonData);
           })
   }
