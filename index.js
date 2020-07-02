@@ -138,7 +138,7 @@ function ready(error, data, links, jsonData, selectedIndex) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
              if (square.classed("active")) {  
-               square.style("fill", "purple");   
+              // square.style("fill", "purple");
                 let color = getColor(d.state); //determines appropriate color based on id 
                 popUpGraph(d.state, color, selectedIndex, jsonData);             
              }
@@ -153,13 +153,14 @@ function ready(error, data, links, jsonData, selectedIndex) {
           .attr("class", function(d) { return "label " + d.code; })
           .attr("x", function(d) {
             // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
-            return ((d.col - 1) * cellSize) + (cellSize *0.3);
+            return ((d.col - 1) * cellSize);
           })
           .attr("y", function(d) {
             // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
-            return ((d.row - 1) * cellSize) + (cellSize*0.35);
+            return ((d.row - 1) * cellSize) + (cellSize*0.3);
           })
-          .style("text-anchor", "middle")
+          // .style("text-anchor", "middle")
+          .style("text-anchor", "start")
           .text(function(d) { return d.code; });
 
           var labels = gridMap.selectAll(".label")
