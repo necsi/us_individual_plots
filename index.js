@@ -137,7 +137,8 @@ function ready(error, data, links, jsonData, selectedIndex) {
           .on("click", function(d) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
-             if (square.classed("active")) {     
+             if (square.classed("active")) {  
+              // square.style("fill", "purple");   
                 let color = getColor(d.state); //determines appropriate color based on id 
                 popUpGraph(d.state, color, selectedIndex, jsonData);             
              }
@@ -151,10 +152,12 @@ function ready(error, data, links, jsonData, selectedIndex) {
         .append("text")
           .attr("class", function(d) { return "label " + d.code; })
           .attr("x", function(d) {
-            return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left*0.75));
+            // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
+            return ((d.col - 1) * cellSize) + (cellSize *0.3);
           })
           .attr("y", function(d) {
-            return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
+            // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
+            return ((d.row - 1) * cellSize) + (cellSize*0.35);
           })
           .style("text-anchor", "middle")
           .text(function(d) { return d.code; });
@@ -170,8 +173,9 @@ function ready(error, data, links, jsonData, selectedIndex) {
         .append("svg")
           .attr("stateMap", function(d) {           
             var color = getColor(d.state); //determines appropriate color based on preloaded csv file
-            x = ((d.col - 1) * cellSize) + (cellSize / 2);
-            y = ((d.row - 1) * cellSize) + (cellSize /2);
+            x = ((d.col - 1) * cellSize);
+            y = ((d.row - 1) * cellSize);
+           // console.log(d.state + "'s x value is "+ x +" and y value is " + y);
             populate(x, y, d.state, color, selectedIndex, jsonData);
           })
   }
@@ -498,9 +502,9 @@ function populate(x, y, state, color, selectedIndex, data){
   //    });
     }
 
-    var w = cellSize*.75,
-        h = cellSize*.75,
-        margin = { top: 0, right: 7, bottom: 0, left: 7 };
+    var w = cellSize*.85,
+        h = cellSize*.85;
+        // margin = { top: 10, right: 10, bottom: 0, left: 10 };
 
 
       // setting time scale for x axis based on date
@@ -525,7 +529,7 @@ function populate(x, y, state, color, selectedIndex, data){
           .attr("fill", "none")
           .attr("stroke", color)
           .attr("stroke-width", 1)
-          .attr("transform", "translate(" + [x,y] + ")")  //translate line based on x and y position
+          .attr("transform", "translate(" + [x+margin.left,y+margin.top] + ")")  //translate line based on x and y position
           .attr("d", line)
         
         const area = d3.area()
@@ -536,7 +540,7 @@ function populate(x, y, state, color, selectedIndex, data){
         d3.select("svg").append("path")
           .datum(dataset)
           .attr("class", "area")
-          .attr("transform", "translate(" + [x,y] + ")")
+          .attr("transform", "translate(" + [x+margin.left,y+margin.top] + ")")
           .attr("fill", color)
           .attr("opacity", "0.2")
           .attr("cursor", "pointer")
