@@ -19,7 +19,7 @@ d3.select("#selectButton")
   .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
   function indexSelected() {
-
+    margin = {top:20, right:20, bottom:20, left:20};
     var x = document.getElementById("selectButton").selectedIndex;
     var y = document.getElementById("selectButton").options;
 
@@ -138,7 +138,7 @@ function ready(error, data, links, jsonData, selectedIndex) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
              if (square.classed("active")) {  
-              // square.style("fill", "purple");   
+               square.style("fill", "purple");   
                 let color = getColor(d.state); //determines appropriate color based on id 
                 popUpGraph(d.state, color, selectedIndex, jsonData);             
              }
@@ -504,7 +504,7 @@ function populate(x, y, state, color, selectedIndex, data){
 
     var w = cellSize*.85,
         h = cellSize*.85;
-        // margin = { top: 10, right: 10, bottom: 0, left: 10 };
+         margin = { top: 10, right: 10, bottom: 0, left: 10 };
 
 
       // setting time scale for x axis based on date
@@ -529,7 +529,7 @@ function populate(x, y, state, color, selectedIndex, data){
           .attr("fill", "none")
           .attr("stroke", color)
           .attr("stroke-width", 1)
-          .attr("transform", "translate(" + [x+margin.left,y+margin.top] + ")")  //translate line based on x and y position
+          .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")  //translate line based on x and y position
           .attr("d", line)
         
         const area = d3.area()
@@ -540,7 +540,7 @@ function populate(x, y, state, color, selectedIndex, data){
         d3.select("svg").append("path")
           .datum(dataset)
           .attr("class", "area")
-          .attr("transform", "translate(" + [x+margin.left,y+margin.top] + ")")
+          .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")
           .attr("fill", color)
           .attr("opacity", "0.2")
           .attr("cursor", "pointer")
