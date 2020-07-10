@@ -202,6 +202,9 @@ function ready(error, data, links, jsonData, selectedIndex) {
         if(width < 300 || height < 400){
           return "6.5px"
         }
+        else if(width < 550 || height < 500){
+          return "7px"
+        }
         else if(width < 700 || height < 600){
           return "9px"
         }
@@ -244,6 +247,9 @@ function ready(error, data, links, jsonData, selectedIndex) {
     .style("font-size", function(d){
       if(width < 300 || height < 400){
         return "6.5px"
+      }
+      else if(width < 550 || height < 500){
+        return "7px"
       }
       else if(width < 700 || height < 600){
         return "9px"
