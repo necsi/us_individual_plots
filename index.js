@@ -199,11 +199,17 @@ function ready(error, data, links, jsonData, selectedIndex) {
       // .style("text-anchor", "middle")
       .style("text-anchor", "start")
       .style("font-size", function(d){
-        if(width < 500 || height < 500){
-          return "7px"
+        if(width < 300 || height < 400){
+          return "6.5px"
+        }
+        else if(width < 700 || height < 600){
+          return "9px"
+        }
+        else if(width < 1000 || height < 800){
+          return "10px"
         }
         else{
-          return "14px"
+          return "12px"
         }
       })
   
@@ -236,14 +242,17 @@ function ready(error, data, links, jsonData, selectedIndex) {
     // .style("text-anchor", "middle")
     .style("text-anchor", "start")
     .style("font-size", function(d){
-      if(width < 300 || height < 300){
+      if(width < 300 || height < 400){
         return "6.5px"
       }
-      else if(width < 500 || height < 500){
+      else if(width < 700 || height < 600){
         return "9px"
       }
+      else if(width < 1000 || height < 800){
+        return "10px"
+      }
       else{
-        return "14px"
+        return "12px"
       }
     })
 
