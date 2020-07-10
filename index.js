@@ -534,7 +534,7 @@ function getColor(state){
                     .style("opacity", 1);
               div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
                     .style("font-size", "12px")
-                    .style("left", (d3.event.pageX+ 10) + "px")
+                    .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY) + "px")
                     .style("padding", "3px")
                     .style("padding-bottom", "15px");
