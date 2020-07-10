@@ -209,7 +209,7 @@ function ready(error, data, links, jsonData, selectedIndex) {
       .style("text-anchor", "start")
       .style("font-size", function(d){
         if(width < 300 || height < 400){
-          return "6.5px"
+          return "5px"
         }
         else if(width < 550 || height < 500){
           return "7px"
@@ -255,7 +255,7 @@ function ready(error, data, links, jsonData, selectedIndex) {
     .style("text-anchor", "start")
     .style("font-size", function(d){
       if(width < 300 || height < 400){
-        return "6.5px"
+        return "5px"
       }
       else if(width < 550 || height < 500){
         return "7px"
