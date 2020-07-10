@@ -146,13 +146,22 @@ function ready(error, data, links, jsonData, selectedIndex) {
           .on("click", function(d) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
-            if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-              alert("Hospitalization Data Not Reported for "+ d.state)
-            }
-            else if (square.classed("active")) {  
-              // square.style("fill", "purple");
+            // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+            //   alert("Hospitalization Data Not Reported for "+ d.state)
+            // }
+            // else if (square.classed("active")) {  
+            //   // square.style("fill", "purple");
+            //     let color = getColor(d.state); //determines appropriate color based on id 
+            //     popUpGraph(d.state, color, selectedIndex, jsonData);             
+            //  }
+            
+            if (square.classed("active")) {  
+              if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Florida' && d.state != 'Kansas' && d.state != 'Hawaii')){
                 let color = getColor(d.state); //determines appropriate color based on id 
-                popUpGraph(d.state, color, selectedIndex, jsonData);             
+                popUpGraph(d.state, color, selectedIndex, jsonData);      
+              }
+              // square.style("fill", "purple");
+                       
              }
           });
 
@@ -222,12 +231,12 @@ function ready(error, data, links, jsonData, selectedIndex) {
         return "Not"; 
         }
         else return;
-      })
-      .on("click", function(d) {
-        if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-          alert("Hospitalization Data not Reported for "+ d.state)
-        }
       });
+      // .on("click", function(d) {
+      //   if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      //     alert("Hospitalization Data not Reported for "+ d.state)
+      //   }
+      // });
 
   var specialLabels = gridMap.selectAll(".specialLabels")
   .data(selectPub.values, function(d) { return d.code; });
@@ -268,12 +277,12 @@ function ready(error, data, links, jsonData, selectedIndex) {
       return "Reported"; 
       }
       else return;
-    })
-    .on("click", function(d) {
-      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-        alert("Hospitalization Data Not Reported for "+ d.state)
-      }
     });
+    // .on("click", function(d) {
+    //   if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+    //     alert("Hospitalization Data Not Reported for "+ d.state)
+    //   }
+    // });
 
 
     var map = gridMap.selectAll(".map")
