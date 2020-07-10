@@ -8,7 +8,8 @@
 var csv_arr = []; //global array to hold certain state and color values from csv file
 fillArr();  //populates csv array [{state, color},{state, color}, {state, color},...]
 
-var selectOptions = ["Daily New Cases", "Daily New Deaths"]
+var selectOptions = ["Daily New Cases", "Daily New Deaths", "Current Hospitalizations"]
+
 // add the options to the button
 d3.select("#selectButton")
   .selectAll('myOptions')
@@ -50,7 +51,6 @@ d3.select("#selectButton")
       // .style("stroke", "lightgrey")
       .style("fill", "white");
       
-  
    gridMap = svg.append("g")
       .attr("class", "gridmap")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -129,15 +129,27 @@ function ready(error, data, links, jsonData, selectedIndex) {
     // draw state rects
     states.enter()
         .append("rect")
-          .attr("class", function(d) {return "state " + d.code; })
+          .attr("class", function(d) {
+            if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+              var square = d3.select(this);
+              //square.style("stroke", "grey");
+              square.style("fill", "#f2f2f3")
+              //alert("No Hospitalization Data Available for "+ d.state)
+            }
+            return "state " + d.code;
+          })
           .attr("x", function(d) { return (d.col-1) * cellSize; })
           .attr("y", function(d) { return (d.row - 1) * cellSize; })
           .attr("width", cellSize)
           .attr("height", cellSize)
+          
           .on("click", function(d) {
             var square = d3.select(this);
             square.classed("active", !square.classed("active"));
-             if (square.classed("active")) {  
+            if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+              alert("Hospitalization Data Not Reported for "+ d.state)
+            }
+            else if (square.classed("active")) {  
               // square.style("fill", "purple");
                 let color = getColor(d.state); //determines appropriate color based on id 
                 popUpGraph(d.state, color, selectedIndex, jsonData);             
@@ -161,10 +173,93 @@ function ready(error, data, links, jsonData, selectedIndex) {
           })
           // .style("text-anchor", "middle")
           .style("text-anchor", "start")
-          .text(function(d) { return d.code; });
-
+          .text(function(d) { 
+            // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+            //   return d.code+" N/A";            
+            // }
+            return d.code; 
+          });
+          
           var labels = gridMap.selectAll(".label")
         .data(selectPub.values, function(d) { return d.code; });
+
+    var specialLabelsOne = gridMap.selectAll(".specialLabelsOne")
+    .data(selectPub.values, function(d) { return d.code; });
+    
+    specialLabelsOne.enter()
+      .append("text")
+      .attr("x", function(d) {
+        // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
+        return ((d.col - 1) * cellSize);
+      })
+      .attr("y", function(d) {
+        // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
+        return ((d.row - 1) * cellSize) + (cellSize*0.6);
+      })
+      // .style("text-anchor", "middle")
+      .style("text-anchor", "start")
+      .style("font-size", function(d){
+        if(width < 500 || height < 500){
+          return "7px"
+        }
+        else{
+          return "14px"
+        }
+      })
+  
+      .text(function(d) { 
+        if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+        // return "N/A"; 
+        return "Not"; 
+        }
+        else return;
+      })
+      .on("click", function(d) {
+        if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+          alert("Hospitalization Data not Reported for "+ d.state)
+        }
+      });
+
+  var specialLabels = gridMap.selectAll(".specialLabels")
+  .data(selectPub.values, function(d) { return d.code; });
+  
+  specialLabels.enter()
+    .append("text")
+    .attr("x", function(d) {
+      // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
+      return ((d.col - 1) * cellSize);
+    })
+    .attr("y", function(d) {
+      // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
+      return ((d.row - 1) * cellSize) + (cellSize*0.8);
+    })
+    // .style("text-anchor", "middle")
+    .style("text-anchor", "start")
+    .style("font-size", function(d){
+      if(width < 300 || height < 300){
+        return "6.5px"
+      }
+      else if(width < 500 || height < 500){
+        return "9px"
+      }
+      else{
+        return "14px"
+      }
+    })
+
+    .text(function(d) { 
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      // return "N/A"; 
+      return "Reported"; 
+      }
+      else return;
+    })
+    .on("click", function(d) {
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+        alert("Hospitalization Data Not Reported for "+ d.state)
+      }
+    });
+
 
     var map = gridMap.selectAll(".map")
       .data(selectPub.values, function(d) { return d.code; });
@@ -177,11 +272,28 @@ function ready(error, data, links, jsonData, selectedIndex) {
             x = ((d.col - 1) * cellSize);
             y = ((d.row - 1) * cellSize);
            // console.log(d.state + "'s x value is "+ x +" and y value is " + y);
-            populate(x, y, d.state, color, selectedIndex, jsonData);
+          //  if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+          //     var square = d3.select(".states");
+          //     square.style("fill", "grey");
+          //     noData(x,y);
+          //   }
+          //   else{
+              populate(x, y, d.state, color, selectedIndex, jsonData);
+           // }
+            
           })
   }
 };
 
+function noData(x, y){
+  svg.append("text")     
+  // .attr("transform","translate(" + [x,y] + ")")
+  .attr("transform", "translate(" + [x,y+(cellSize)] + ")")
+  .style("text-anchor", "start")
+  .text("N/A")
+  .style("font-size", "10px")  
+  
+}
 /*
 * getColor: determines corresponding color based on the id given. If there is a change
 *           in color, it returns the changed color, else returns the old color
@@ -271,6 +383,20 @@ function getColor(state){
         hoverOverText = ' new deaths on ';
    //   });
     }
+    else if(selectedIndex == 'Current Hospitalizations'){
+      //   d3.json(file, function(data) {
+           //determine index from JSON corresponding to state name
+           var index = data.findIndex(obj => obj.state==stateName);
+          // state = data[selectedIndex].state;
+           for(var i = 0; i < data[index].hospDates.length; i++){
+             //pushes date and value into array, similar to x, y coordinates on a graph
+             dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].new_hospitalizations[i] }); 
+           }
+           // color = "black";
+           yAxisLabel = 'Patients Hospitalized';
+           hoverOverText = ' patients in the hospital on ';
+      //   });
+       }
    
     //opening json file to read data only from the selected index 
     //  d3.json(file, function(data) {
@@ -384,7 +510,7 @@ function getColor(state){
                     .style("opacity", 1);
               div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
                     .style("font-size", "12px")
-                    .style("left", (d3.event.pageX) + "px")
+                    .style("left", (d3.event.pageX+ 10) + "px")
                     .style("top", (d3.event.pageY) + "px")
                     .style("padding", "3px")
                     .style("padding-bottom", "15px");
@@ -501,6 +627,13 @@ function populate(x, y, state, color, selectedIndex, data){
         }
     //    color = "black"
   //    });
+    }
+    else if(selectedIndex == 'Current Hospitalizations'){
+      var index = data.findIndex(obj => obj.state==state);
+        for(var i = 0; i < data[index].hospDates.length; i++){
+          //pushes date and value into array, similar to x, y coordinates on a graph
+          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].avg_hospitalizations[i] }); 
+        }
     }
 
     var w = cellSize*.85,

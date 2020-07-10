@@ -20,6 +20,10 @@
 
 import csv
 import json
+import requests
+from datetime import datetime
+import numpy as np
+
 
 import pandas as pd
 us_states = ["Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "California", "Colorado", "Connecticut", 
@@ -29,6 +33,27 @@ us_states = ["Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "Cali
             "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", 
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Virgin Islands", 
             "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
+
+us_states_codes = ["AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "GU", "HI", "IA", 
+                   "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", 
+                   "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD", 
+                   "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY"]
+
+new_hospitalizations = []
+stateIDs = []
+datesHospitalizations = []
+
+url = "https://covidtracking.com/api/v1/states/daily.csv"
+data = pd.read_csv(url)
+for index, row in data.iterrows():
+    currDate = datetime.strptime(str(row['date']), '%Y%m%d').date().isoformat()
+    datesHospitalizations.append(currDate)
+    stateIDs.append(row['state'])
+    # new_hospitalizations.append(row['hospitalizedIncrease'])
+    new_hospitalizations.append(row['hospitalizedCurrently'])
+
+#print(datesHospitalizations)
+
 dates = []
 states = []
 total_cases = []
@@ -45,23 +70,38 @@ for index, row in data.iterrows():
 
 arr = []
 for idx, val in enumerate(us_states):
-    total_cases1 = []
-    total_deaths1 = []
+    total_cases_state = []
+    total_deaths_state = []
    # state_dict = {"state":val, "dates": [], "total_cases": [], "new_cases": [], "avg_cases": [], "total_deaths": [], "new_deaths": [], "avg_deaths": []}
-    state_dict = {"state":val, "dates": [], "new_cases": [], "avg_cases": [], "new_deaths": [], "avg_deaths": []}
+    # state_dict = {"state":val, "dates": [], "new_cases": [], "avg_cases": [], "new_deaths": [], "avg_deaths": []}
+    state_dict = {"state":val, "dates": [], "new_cases": [], "avg_cases": [], "new_deaths": [], "avg_deaths": [], "hospDates": [], "new_hospitalizations": [], "avg_hospitalizations": []}
     for i, states_name in enumerate(states):
         if states[i] == val: 
             state_dict["dates"].append(dates[i])
             # state_dict["total_cases"].append(total_cases[i])
             # state_dict["total_deaths"].append(total_deaths[i])
-            total_cases1.append(total_cases[i])
-            total_deaths1.append(total_deaths[i])
+            total_cases_state.append(total_cases[i])
+            total_deaths_state.append(total_deaths[i])
+
+    for i, state_id in enumerate(stateIDs):
+        if(state_id == us_states_codes[idx] and not(np.isnan(new_hospitalizations[i]))):
+            state_dict["hospDates"].append(datesHospitalizations[i])
+            state_hospitalization = 0
+            if(new_hospitalizations[i] < 0):
+                state_dict["new_hospitalizations"].append(state_hospitalization)
+            else:
+                state_dict["new_hospitalizations"].append(new_hospitalizations[i])
+   #special case, fixing error from Florida data 
+    if(us_states_codes[idx] == 'FL'):
+        state_dict["new_hospitalizations"] = []
+        state_dict["hospDates"] = []
+
    # for i, case_val in enumerate(state_dict["total_cases"]):
-    for i, case_val in enumerate(total_cases1):
+    for i, case_val in enumerate(total_cases_state):
         new_cases = 0
         if i > 0:
             # new_cases = state_dict["total_cases"][i] - state_dict["total_cases"][i-1]
-            new_cases = total_cases1[i] - total_cases1[i-1]
+            new_cases = total_cases_state[i] - total_cases_state[i-1]
         if new_cases < 0:
                 new_cases = 0
         #special case, fixing error from Michigan data on 6/5
@@ -69,11 +109,11 @@ for idx, val in enumerate(us_states):
             new_cases = 284
         state_dict["new_cases"].append(new_cases)
     # for i, death_val in enumerate(state_dict["total_deaths"]): 
-    for i, death_val in enumerate(total_deaths1): 
+    for i, death_val in enumerate(total_deaths_state): 
         new_deaths = 0
         if i > 0:
             # new_deaths = state_dict["total_deaths"][i] - state_dict["total_deaths"][i-1]
-            new_deaths = total_deaths1[i] - total_deaths1[i-1]
+            new_deaths = total_deaths_state[i] - total_deaths_state[i-1]
         if new_deaths < 0:
             new_deaths = 0
         state_dict["new_deaths"].append(new_deaths)
@@ -88,6 +128,11 @@ for idx, val in enumerate(us_states):
     avgDeath_series = numbers_series.rolling(window=window, min_periods=1, center=True).mean()
     moving_averages_list = avgDeath_series.tolist()
     state_dict["avg_deaths"] = moving_averages_list
+
+    numbers_series = pd.Series(state_dict["new_hospitalizations"], dtype="float64")
+    avgHosp_series = numbers_series.rolling(window=window, min_periods=1, center=True).mean()
+    moving_averages_list = avgHosp_series.tolist()
+    state_dict["avg_hospitalizations"] = moving_averages_list
 
     arr.append(state_dict)
 
