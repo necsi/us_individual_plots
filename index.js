@@ -432,7 +432,8 @@ function getColor(state){
       // setting linear scale for y axis based on max value 
       var yScale = d3.scaleLinear()
           .domain([0, d3.max(dataset, function (d) { return d.y; })])
-          .range([h, padding]);
+          // .range([h, padding]);
+          .range([h, padding/2]);
 
       var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
       var yAxis = d3.axisLeft(yScale).ticks(5);
@@ -458,7 +459,15 @@ function getColor(state){
         .attr("y", padding*0.25)
         .attr("x",0 - (h / 2))
         .attr("dy", "1em")
-        .style("font-size", "14px")
+        // .style("font-size", "14px")
+        .style("font-size", function(d){
+          if(width < 300 || height < 400){
+            return "10px";
+          }
+          else{
+            return "14px";
+          }
+        })
         .style("text-anchor", "middle")
         .text(yAxisLabel);      
 
@@ -469,7 +478,15 @@ function getColor(state){
                             (20) + ")")
         .style("text-anchor", "middle")
         .text(stateName)
-        .style("font-size", "24px")
+        //.style("font-size", "24px")
+        .style("font-size", function(d){
+          if(width < 300 || height < 400){
+            return "16px";
+          }
+          else{
+            return "24px";
+          }
+        })
         .style("fill", "#696969");    
       
     
