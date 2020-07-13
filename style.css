@@ -50,10 +50,11 @@ p{
   background-color: #fefefe;
   /* margin: auto; */
   /* padding-right: 20px; */
-  margin-left: 20px;
-  margin-right: 20px;
+  /* margin-left: 20px;
+  margin-right: 20px; */
+  margin-left: 20%;
   border: 1px solid #888;
-  /* width: 90%; */
+  width: 60%;
   height: 75%; 
 }
 /* The Close Button */
@@ -63,6 +64,10 @@ p{
   font-size: 25px;
   font-weight: bold;
   padding: 10px;
+}
+#graphTitle{
+  padding-top: 10px;
+  text-align: center;
 }
 
 .close:hover,

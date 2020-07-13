@@ -19,74 +19,9 @@ d3.select("#selectButton")
   .text(function (d) { return d; }) // text showed in the menu
   .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
-  function indexSelected() {
-    margin = {top:20, right:20, bottom:20, left:20};
-    var x = document.getElementById("selectButton").selectedIndex;
-    var y = document.getElementById("selectButton").options;
-
-    d3.selectAll("#vis > *").remove(); 
-    svg = d3.select("#vis")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
-    
-    grid = svg.append("g")
-      .attr("class", "gridlines")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");  
-      var row = grid.selectAll(".row")
-      .data(gridData)
-      .enter()
-      .append("g")
-      .attr("class", "row");
-  
-   column = row.selectAll(".cell")
-      .data(function(d) { return d; })
-      .enter()
-      .append("rect")
-      .attr("class", "cell")
-      .attr("x", function(d) { return d.x; }) 
-      .attr("y", function(d) { return d.y; })
-      .attr("width", function(d) { return d.width; })
-      .attr("height", function(d) { return d.height; })
-      // .style("stroke", "lightgrey")
-      .style("fill", "white");
-      
-   gridMap = svg.append("g")
-      .attr("class", "gridmap")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      
-      // slow the json load intentionally, so we can see it every load
-      setTimeout(function() {
-          // load json data and trigger callback
-          d3.json("./result.json", function(data) {
-              // instantiate chart within callback
-              d3.queue()
-              .defer(d3.csv, "publication-grids.csv")
-              .defer(d3.csv, "links.csv")
-              .defer(setData, data)
-              .defer(selectIndex)
-              .await(ready);
-          });
-      }, 1500);
-
-    function setData(data, callback){
-      callback(null, data)
-    }
-    function selectIndex(callback) {
-      index =  y[x].value;
-      if (index == null){
-        index = 1
-      }
-      callback(null, index);
-    }
-
-  }
-
 var margin = {top:20, right:20, bottom:20, left:20},
-  width = window.innerWidth - margin.left - margin.right,
-  height = window.innerHeight - margin.top - margin.bottom;
-  // width = 1400 - margin.left - margin.right,
-  //height = 850 - margin.top - margin.bottom;
+width = window.innerWidth - margin.left - margin.right,
+height = window.innerHeight - margin.top - margin.bottom;
 
 // calculate cellSize based on dimensions of svg
 var cols = 13;
@@ -98,226 +33,217 @@ var gridData = gridData(13, 8, cellSize);
 var g_svg = d3.select("#graphModal")
      .append("svg")
      .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+     .attr("height", height + margin.top + margin.bottom);
 
 indexSelected();
 
 d3.select("#vis")
   .attr("align","center");
 
+/*
+* indexSelected: determines index selected from dropdown, calls function to create US map grid,  
+* and preloads json data for efficiency 
+*/
+function indexSelected() {
+  margin = {top:20, right:20, bottom:20, left:20};
+  var x = document.getElementById("selectButton").selectedIndex;
+  var y = document.getElementById("selectButton").options;
 
+  d3.selectAll("#vis > *").remove(); 
+  svg = d3.select("#vis")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
-function ready(error, data, links, jsonData, selectedIndex) {
-    var nest = d3.nest()
-        .key(function(d) { return d.publication; })
-        .entries(data);
+  grid = svg.append("g")
+    .attr("class", "gridlines")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");  
+    var row = grid.selectAll(".row")
+    .data(gridData)
+    .enter()
+    .append("g")
+    .attr("class", "row");
+
+  column = row.selectAll(".cell")
+    .data(function(d) { return d; })
+    .enter()
+    .append("rect")
+    .attr("class", "cell")
+    .attr("x", function(d) { return d.x; }) 
+    .attr("y", function(d) { return d.y; })
+    .attr("width", function(d) { return d.width; })
+    .attr("height", function(d) { return d.height; })
+    .style("fill", "white");
     
-    // drawing grid map
-    drawGridMap(links[0].publication);
+  gridMap = svg.append("g")
+    .attr("class", "gridmap")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+  // preloading csv files and json data as parameters for the function 'ready' 
+  setTimeout(function() {
+      // load json data and trigger callback
+      d3.json("./result.json", function(data) {
+          // instantiate chart within callback
+          d3.queue()
+          .defer(d3.csv, "publication-grids.csv")
+          .defer(d3.csv, "links.csv")
+          .defer(setData, data)
+          .defer(selectIndex)
+          .await(ready);
+      });
+  }, 1500);
 
-    // function to create initial map
-    function drawGridMap(publication) {
-      // filter data to return the object of publication of interest
-      var selectPub = nest.find(function(d) {
-        return d.key == publication;
+  function setData(data, callback){
+    callback(null, data)
+  }
+  function selectIndex(callback) {
+    index =  y[x].value;
+    if (index == null){
+      index = 1
+    }
+    callback(null, index);
+  }
+}
+
+/*
+* ready: graws grid, labels, and calls function to populate grid boxes
+*/
+function ready(error, data, links, jsonData, selectedIndex) {
+  var nest = d3.nest()
+    .key(function(d) { return d.publication; })
+    .entries(data);
+  
+  // drawing grid map
+  drawGridMap(links[0].publication);
+
+  // function to create initial map
+  function drawGridMap(publication) {
+    // filter data to return the object of publication of interest
+    var selectPub = nest.find(function(d) {
+      return d.key == publication;
+  });
+
+  // use a key function to bind rects to states
+  var states = gridMap.selectAll(".state")
+    .data(selectPub.values, function(d) {return d.code; });
+
+  // draw state rects
+  states.enter()
+    .append("rect")
+    .attr("class", function(d) {
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+     // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+        var square = d3.select(this);
+        square.style("fill", "#f2f2f3")
+      }
+      return "state " + d.code;
+    })
+    .attr("x", function(d) { return (d.col-1) * cellSize; })
+    .attr("y", function(d) { return (d.row - 1) * cellSize; })
+    .attr("width", cellSize)
+    .attr("height", cellSize)
+    
+    .on("click", function(d) {
+      var square = d3.select(this);
+      square.classed("active", !square.classed("active"));
+      if (square.classed("active")) {  
+        if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Florida' && d.state != 'Kansas' && d.state != 'Hawaii')){
+        //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+          let color = getColor(d.state); //determines appropriate color based on id 
+          popUpGraph(d.state, color, selectedIndex, jsonData);      
+        }                       
+      }
     });
 
-    // use a key function to bind rects to states
-    var states = gridMap.selectAll(".state")
-        .data(selectPub.values, function(d) {return d.code; });
-
-    // draw state rects
-    states.enter()
-        .append("rect")
-          .attr("class", function(d) {
-            if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-              var square = d3.select(this);
-              //square.style("stroke", "grey");
-              square.style("fill", "#f2f2f3")
-              //alert("No Hospitalization Data Available for "+ d.state)
-            }
-            return "state " + d.code;
-          })
-          .attr("x", function(d) { return (d.col-1) * cellSize; })
-          .attr("y", function(d) { return (d.row - 1) * cellSize; })
-          .attr("width", cellSize)
-          .attr("height", cellSize)
-          
-          .on("click", function(d) {
-            var square = d3.select(this);
-            square.classed("active", !square.classed("active"));
-            // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-            //   alert("Hospitalization Data Not Reported for "+ d.state)
-            // }
-            // else if (square.classed("active")) {  
-            //   // square.style("fill", "purple");
-            //     let color = getColor(d.state); //determines appropriate color based on id 
-            //     popUpGraph(d.state, color, selectedIndex, jsonData);             
-            //  }
-            
-            if (square.classed("active")) {  
-              if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Florida' && d.state != 'Kansas' && d.state != 'Hawaii')){
-                let color = getColor(d.state); //determines appropriate color based on id 
-                popUpGraph(d.state, color, selectedIndex, jsonData);      
-              }
-              // square.style("fill", "purple");
-                       
-             }
-          });
-
-    var labels = gridMap.selectAll(".label")
-        .data(selectPub.values, function(d) { return d.code; });
-
-    // add state labels
-    labels.enter()
-        .append("text")
-          .attr("class", function(d) { return "label " + d.code; })
-          .attr("x", function(d) {
-            // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
-            return ((d.col - 1) * cellSize);
-          })
-          .attr("y", function(d) {
-            // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
-            return ((d.row - 1) * cellSize) + (cellSize*0.3);
-          })
-          // .style("text-anchor", "middle")
-          .style("text-anchor", "start")
-          .text(function(d) { 
-            // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-            //   return d.code+" N/A";            
-            // }
-            return d.code; 
-          });
-          
-          var labels = gridMap.selectAll(".label")
-        .data(selectPub.values, function(d) { return d.code; });
-
-    var specialLabelsOne = gridMap.selectAll(".specialLabelsOne")
+  var labels = gridMap.selectAll(".label")
     .data(selectPub.values, function(d) { return d.code; });
-    
-    specialLabelsOne.enter()
-      .append("text")
-      .attr("x", function(d) {
-        // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
-        return ((d.col - 1) * cellSize);
-      })
-      .attr("y", function(d) {
-        // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
-        return ((d.row - 1) * cellSize) + (cellSize*0.6);
-      })
-      // .style("text-anchor", "middle")
-      .style("text-anchor", "start")
-      .style("font-size", function(d){
-        if(width < 300 || height < 400){
-          return "5px"
-        }
-        else if(width < 550 || height < 500){
-          return "7px"
-        }
-        else if(width < 700 || height < 600){
-          return "9px"
-        }
-        else if(width < 1000 || height < 800){
-          return "10px"
-        }
-        else{
-          return "12px"
-        }
-      })
-  
-      .text(function(d) { 
-        if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-        // return "N/A"; 
-        return "Not"; 
-        }
-        else return;
-      });
-      // .on("click", function(d) {
-      //   if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-      //     alert("Hospitalization Data not Reported for "+ d.state)
-      //   }
-      // });
 
-  var specialLabels = gridMap.selectAll(".specialLabels")
-  .data(selectPub.values, function(d) { return d.code; });
-  
-  specialLabels.enter()
+  // add state labels
+  labels.enter()
     .append("text")
+    .attr("class", function(d) { return "label " + d.code; })
     .attr("x", function(d) {
-      // return ((d.col - 1) * cellSize) + (cellSize / 2 - (margin.left));
       return ((d.col - 1) * cellSize);
     })
     .attr("y", function(d) {
-      // return ((d.row - 1) * cellSize) + (cellSize /2 - (margin.top*0.5));
-      return ((d.row - 1) * cellSize) + (cellSize*0.8);
+      return ((d.row - 1) * cellSize) + (cellSize*0.3);
     })
-    // .style("text-anchor", "middle")
+    .style("text-anchor", "start")
+    .text(function(d) { 
+      return d.code; 
+    });
+        
+
+  var specialLabelsNot = gridMap.selectAll(".specialLabelsNot")
+    .data(selectPub.values, function(d) { return d.code; });
+  
+  specialLabelsNot.enter()
+    .append("text")
+    .attr("x", function(d) {
+      return ((d.col - 1) * cellSize);
+    })
+    .attr("y", function(d) {
+      return ((d.row - 1) * cellSize) + (cellSize*0.6);
+    })
     .style("text-anchor", "start")
     .style("font-size", function(d){
-      if(width < 300 || height < 400){
-        return "5px"
-      }
-      else if(width < 550 || height < 500){
-        return "7px"
-      }
-      else if(width < 700 || height < 600){
-        return "9px"
-      }
-      else if(width < 1000 || height < 800){
-        return "10px"
-      }
-      else{
-        return "12px"
-      }
+      if(width < 300 || height < 400){ return "5px" }
+      else if(width < 550 || height < 500){ return "7px" }
+      else if(width < 700 || height < 600){ return "9px" }
+      else if(width < 1000 || height < 800){ return "10px" }
+      else{ return "12px" }
     })
-
     .text(function(d) { 
       if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-      // return "N/A"; 
-      return "Reported"; 
+      //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+        return "Not"; 
       }
       else return;
     });
-    // .on("click", function(d) {
-    //   if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-    //     alert("Hospitalization Data Not Reported for "+ d.state)
-    //   }
-    // });
 
+  var specialLabelReported = gridMap.selectAll(".specialLabelReported")
+    .data(selectPub.values, function(d) { return d.code; });
 
-    var map = gridMap.selectAll(".map")
-      .data(selectPub.values, function(d) { return d.code; });
+  specialLabelReported.enter()
+    .append("text")
+    .attr("x", function(d) {
+      return ((d.col - 1) * cellSize);
+    })
+    .attr("y", function(d) {
+      return ((d.row - 1) * cellSize) + (cellSize*0.8);
+    })
+    .style("text-anchor", "start")
+    .style("font-size", function(d){
+      if(width < 300 || height < 400){ return "5px" }
+      else if(width < 550 || height < 500){ return "7px" }
+      else if(width < 700 || height < 600){ return "9px" }
+      else if(width < 1000 || height < 800){ return "10px" }
+      else{ return "12px" }
+    })
+    .text(function(d) { 
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
 
-    // graphs for each state 
-    map.enter()
-        .append("svg")
-          .attr("stateMap", function(d) {           
-            var color = getColor(d.state); //determines appropriate color based on preloaded csv file
-            x = ((d.col - 1) * cellSize);
-            y = ((d.row - 1) * cellSize);
-           // console.log(d.state + "'s x value is "+ x +" and y value is " + y);
-          //  if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-          //     var square = d3.select(".states");
-          //     square.style("fill", "grey");
-          //     noData(x,y);
-          //   }
-          //   else{
-              populate(x, y, d.state, color, selectedIndex, jsonData);
-           // }
-            
-          })
+        return "Reported"; 
+      }
+      else return;
+    });
+
+  var map = gridMap.selectAll(".map")
+    .data(selectPub.values, function(d) { return d.code; });
+
+  // graphs for each state 
+  map.enter()
+    .append("svg")
+      .attr("stateMap", function(d) {           
+        var color = getColor(d.state); //determines appropriate color based on preloaded csv file
+        x = ((d.col - 1) * cellSize);
+        y = ((d.row - 1) * cellSize);
+        populate(x, y, d.state, color, selectedIndex, jsonData);            
+      })
   }
 };
 
-function noData(x, y){
-  svg.append("text")     
-  // .attr("transform","translate(" + [x,y] + ")")
-  .attr("transform", "translate(" + [x,y+(cellSize)] + ")")
-  .style("text-anchor", "start")
-  .text("N/A")
-  .style("font-size", "10px")  
-  
-}
 /*
 * getColor: determines corresponding color based on the id given. If there is a change
 *           in color, it returns the changed color, else returns the old color
@@ -334,247 +260,231 @@ function getColor(state){
 * popUpGraph: takes in stateName and generates Modal with graph of 
 *             the state selected
 */
- function popUpGraph(stateName, color, selectedIndex, data) {
-  // console.log(data);
-  // function popUpGraph(stateName) {
-    var modal = document.getElementById("myModal");
+function popUpGraph(stateName, color, selectedIndex, data) {
+  var modal = document.getElementById("myModal");
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
 
-    //if 'x' button clicled, hide modal and reset g_svg
-    span.onclick = function() {
+  //if 'x' button clicled, hide modal and reset g_svg
+  span.onclick = function() {
+    modal.style.display = "none";
+    d3.selectAll("#graphModal > *").remove(); 
+    g_svg = d3.select("#graphModal")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("align","center");
+    d3.selectAll("#graphTitle > *").remove(); 
+  }
+  //if non-modal section clicled, hide modal and reset g_svg
+  window.onclick = function(event) {
+    if (event.target == modal) {
       modal.style.display = "none";
       d3.selectAll("#graphModal > *").remove(); 
       g_svg = d3.select("#graphModal")
-        .append("svg")
+      .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .attr("align","center");
+      .attr("align","center");
+      d3.selectAll("#graphTitle > *").remove(); 
     }
-    //if non-modal section clicled, hide modal and reset g_svg
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-        d3.selectAll("#graphModal > *").remove(); 
-        g_svg = d3.select("#graphModal")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .attr("align","center");
-        
-      }
-    }
-
-    modal.style.display = "block";
-
-    //setting svg height, width, and margin values
-    // var w = 700,
-    //     h = 400,
-    var w = width * 0.9,
-        h = height *0.5,
-        padding = 45;
-
-    var file="./result.json";
-    const dataset = [];
-  // var state;
-    var yAxisLabel;
-    var hoverOverText;
-    if(selectedIndex == 'Daily New Cases'){
-   //   d3.json(file, function(data) {
-        //determine index from JSON corresponding to state name
-        var index = data.findIndex(obj => obj.state==stateName);
-       // state = data[selectedIndex].state;
-        for(var i = 0; i < data[index].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_cases[i] }); 
-        }
-   //   });
-      yAxisLabel = 'Daily New Cases';
-      hoverOverText = ' new cases on ';
-    }
-    else if(selectedIndex == 'Daily New Deaths'){
-   //   d3.json(file, function(data) {
-        //determine index from JSON corresponding to state name
-        var index = data.findIndex(obj => obj.state==stateName);
-       // state = data[selectedIndex].state;
-        for(var i = 0; i < data[index].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
-        }
-        // color = "black";
-        yAxisLabel = 'Daily New Deaths';
-        hoverOverText = ' new deaths on ';
-   //   });
-    }
-    else if(selectedIndex == 'Current Hospitalizations'){
-      //   d3.json(file, function(data) {
-           //determine index from JSON corresponding to state name
-           var index = data.findIndex(obj => obj.state==stateName);
-          // state = data[selectedIndex].state;
-           for(var i = 0; i < data[index].hospDates.length; i++){
-             //pushes date and value into array, similar to x, y coordinates on a graph
-             dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].new_hospitalizations[i] }); 
-           }
-           // color = "black";
-           yAxisLabel = 'Patients Hospitalized';
-           hoverOverText = ' patients in the hospital on ';
-      //   });
-       }
-   
-    //opening json file to read data only from the selected index 
-    //  d3.json(file, function(data) {
-      // setting time scale for x axis based on dates  
-      var xScale = d3.scaleTime()
-          .domain(d3.extent(dataset, function(d) { return d.x; }))
-          .range([padding, w - padding]); //taking into account margins
-
-      // setting linear scale for y axis based on max value 
-      var yScale = d3.scaleLinear()
-          .domain([0, d3.max(dataset, function (d) { return d.y; })])
-          // .range([h, padding]);
-          .range([h, padding/2]);
-
-      var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
-      var yAxis = d3.axisLeft(yScale).ticks(5);
-
-      //draw x axis in modal
-      g_svg.append("g")
-        .attr("transform", "translate("+padding*0.5+"," + (h) + ")")
-        .call(xAxis)
-        .selectAll("text")
-        .attr("dy", ".25em")
-        .attr("dx", "-.8em")
-        .attr("transform", "rotate(-45)")
-        .style("text-anchor", "end");
-
-      //draw y axis in modal
-      g_svg.append("g")
-        .attr("transform", "translate("+padding*1.5+",0)")
-        .call(yAxis);
-
-      g_svg.append("text")
-        .attr("transform", "rotate(-90)")
-        //.attr("transform", "translate("+ 10 +","+(h/2)+")rotate(-90)")
-        .attr("y", padding*0.25)
-        .attr("x",0 - (h / 2))
-        .attr("dy", "1em")
-        // .style("font-size", "14px")
-        .style("font-size", function(d){
-          if(width < 300 || height < 400){
-            return "10px";
-          }
-          else{
-            return "14px";
-          }
-        })
-        .style("text-anchor", "middle")
-        .text(yAxisLabel);      
-
-      //add title to graph
-      g_svg.append("text")     
-        .attr("transform",
-                "translate(" + (w/2) + " ," + 
-                            (20) + ")")
-        .style("text-anchor", "middle")
-        .text(stateName)
-        //.style("font-size", "24px")
-        .style("font-size", function(d){
-          if(width < 300 || height < 400){
-            return "16px";
-          }
-          else{
-            return "24px";
-          }
-        })
-        .style("fill", "#696969");    
-      
-    
-      //draw line and path 
-      const line = d3.line()
-        .x(function(d) { return xScale(d.x) })
-        .y(function(d) { return yScale(d.y) })
-
-      g_svg.append("path")
-        .datum(dataset)
-        .attr("fill", "none")
-        .attr("transform", "translate("+padding*0.5+",0)")
-        .attr("stroke", color)
-        .attr("stroke-width", 1)
-        .attr("d", line)
-        
-      const area = d3.area()
-        .x(function(d) { return xScale(d.x); })
-        .y0(h)
-        .y1(function(d) { return yScale(d.y); });
-
-        g_svg.append("path")
-        .datum(dataset)
-        .attr("class", "area")
-        .attr("transform", "translate("+padding*0.5+",0)")
-        .attr("fill", color)
-        .attr("opacity", "0.2")
-        .attr("cursor", "pointer")
-        .attr("d", area);
-
-
-      var div = d3.select("#graphInfo").append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("background-color", "white")
-        .style("border", "dotted")
-        .style("border-width", "1px")
-        .style("border-radius", "3px")
-        .style("opacity", 0);
-
-      //place dots to represent all x y coordinates 
-      g_svg
-        .append("g")
-        .selectAll("dot")
-        .data(dataset)
-        
-        .enter()
-        .append("circle")
-            .attr("cx", function(d) { return xScale(d.x) } )
-            .attr("cy", function(d) { return yScale(d.y) } )
-            .attr("r", 2)
-            .attr("fill", color)
-            .attr("transform", "translate("+padding*0.5+",0)")
-
-            //interactive feature to see new cases per day
-            .on('mouseover', function (d, i) {
-              d3.select(this).transition()
-                    .duration('100')
-                    .attr("r", 7);
-              div.transition()
-                    .duration(100)
-                    .style("opacity", 1);
-              div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
-                    .style("font-size", "12px")
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY) + "px")
-                    .style("padding", "3px")
-                    .style("padding-bottom", "15px");
-                    
-            })
-            .on('mouseout', function (d, i) {
-              d3.select(this).transition()
-                  .duration('200')
-                  .attr("r", 2);
-              div.transition()
-                  .duration('200')
-                  .style("opacity", 0);
-            });
-
-  //   });
   }
+
+  modal.style.display = "block";
+
+  //setting svg height, width, and margin values
+  var w = width * 0.6,
+      h = height *0.5,
+      padding = 45;
+
+  var file="./result.json";
+  const dataset = [];
+  var yAxisLabel;
+  var hoverOverText;
+  if(selectedIndex == 'Daily New Cases'){
+    //determine index from JSON corresponding to state name
+    var index = data.findIndex(obj => obj.state==stateName);
+    for(var i = 0; i < data[index].dates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_cases[i] }); 
+    }
+    yAxisLabel = 'Daily New Cases';
+    hoverOverText = ' new cases on ';
+  }
+  else if(selectedIndex == 'Daily New Deaths'){
+    //determine index from JSON corresponding to state name
+    var index = data.findIndex(obj => obj.state==stateName);
+    // state = data[selectedIndex].state;
+    for(var i = 0; i < data[index].dates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
+    }
+    yAxisLabel = 'Daily New Deaths';
+    hoverOverText = ' new deaths on ';
+  }
+  else if(selectedIndex == 'Current Hospitalizations'){
+    //determine index from JSON corresponding to state name
+    var index = data.findIndex(obj => obj.state==stateName);
+    for(var i = 0; i < data[index].hospDates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].new_hospitalizations[i] }); 
+    }
+    yAxisLabel = 'Patients Hospitalized';
+    hoverOverText = ' patients in the hospital on ';
+  }
+  
+  //opening json file to read data only from the selected index 
+    // setting time scale for x axis based on dates  
+  var xScale = d3.scaleTime()
+    .domain(d3.extent(dataset, function(d) { return d.x; }))
+    .range([padding, w - padding]); //taking into account margins
+
+  // setting linear scale for y axis based on max value 
+  var yScale = d3.scaleLinear()
+    .domain([0, d3.max(dataset, function (d) { return d.y; })])
+    .range([h, padding*0.2]);
+
+  var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
+  var yAxis = d3.axisLeft(yScale).ticks(5);
+
+    //draw x axis in modal
+  g_svg.append("g")
+    .attr("transform", "translate("+padding*0.5+"," + (h) + ")")
+    .call(xAxis)
+    .selectAll("text")
+    .attr("dy", ".25em")
+    .attr("dx", "-.8em")
+    .attr("transform", "rotate(-45)")
+    .style("text-anchor", "end");
+
+    //draw y axis in modal
+  g_svg.append("g")
+    .attr("transform", "translate("+padding*1.5+",0)")
+    .call(yAxis);
+
+  g_svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", padding*0.25)
+    .attr("x",0 - (h / 2))
+    .attr("dy", "1em")
+    .style("font-size", function(d){
+      if(width < 300 || height < 400){ return "10px"; }
+      else{ return "14px"; }
+    })
+    .style("text-anchor", "middle")
+    .text(yAxisLabel);      
+
+  
+  d3.select("#graphTitle").append("text")
+  .attr("transform", "translate(" + (w/2) + " ," + 
+                      (20) + ")")
+  .style("text-anchor", "middle")
+  .text(stateName)
+  .style("font-size", function(d){
+    if(width < 300 || height < 400){ return "16px"; }
+    else{ return "24px"; }
+  });
+      
+    // //add title to graph
+    // g_svg.append("text")     
+    //   .attr("transform",
+    //           "translate(" + (w/2) + " ," + 
+    //                       (10) + ")")
+    //   .style("text-anchor", "middle")
+    //   .text(stateName)
+    //   //.style("font-size", "24px")
+    //   .style("font-size", function(d){
+    //     if(width < 300 || height < 400){
+    //       return "16px";
+    //     }
+    //     else{
+    //       return "24px";
+    //     }
+    //   })
+    //   .style("fill", "#696969");    
+    
+  
+    //draw line and path 
+  const line = d3.line()
+    .x(function(d) { return xScale(d.x) })
+    .y(function(d) { return yScale(d.y) })
+
+  g_svg.append("path")
+    .datum(dataset)
+    .attr("fill", "none")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("stroke", color)
+    .attr("stroke-width", 1)
+    .attr("d", line)
+      
+  const area = d3.area()
+    .x(function(d) { return xScale(d.x); })
+    .y0(h)
+    .y1(function(d) { return yScale(d.y); });
+
+  g_svg.append("path")
+    .datum(dataset)
+    .attr("class", "area")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("fill", color)
+    .attr("opacity", "0.2")
+    .attr("cursor", "pointer")
+    .attr("d", area);
+
+
+  var div = d3.select("#graphInfo").append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "dotted")
+    .style("border-width", "1px")
+    .style("border-radius", "3px")
+    .style("opacity", 0);
+
+  //place dots to represent all x y coordinates 
+  g_svg
+    .append("g")
+    .selectAll("dot")
+    .data(dataset)
+    .enter()
+    .append("circle")
+      .attr("cx", function(d) { return xScale(d.x) } )
+      .attr("cy", function(d) { return yScale(d.y) } )
+      .attr("r", 2)
+      .attr("fill", color)
+      .attr("transform", "translate("+padding*0.5+",0)")
+
+     //interactive feature to see new cases/deaths/hosps per day
+    .on('mouseover', function (d, i) {
+      d3.select(this).transition()
+        .duration('100')
+        .attr("r", 7);
+      div.transition()
+        .duration(100)
+        .style("opacity", 1);
+      div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
+        .style("font-size", "12px")
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY) + "px")
+        .style("padding", "3px")
+        .style("padding-bottom", "15px");        
+      })
+      .on('mouseout', function (d, i) {
+        d3.select(this).transition()
+          .duration('200')
+          .attr("r", 2);
+        div.transition()
+          .duration('200')
+          .style("opacity", 0);
+      });
+}
 
 /*
 * fillArr: reads csv file and populates csv_arr with all id, change, and old color values.
 *          *This process of preloading is to get around the asynchronous javascript process*
 */
 function fillArr(){
-  // d3.csv("state-colors.csv", function(data) {
     d3.csv("USStateColors.csv", function(data) {
     for(var i = 0; i < data.length; i++){
       csv_arr.push([data[i].state, data[i].color]);
@@ -646,82 +556,74 @@ function calcCellSize(w, h, ncol, nrow) {
 *           based on x y position
 */
 function populate(x, y, state, color, selectedIndex, data){
-  //  var file="./result.json";
-    const dataset = [];
-    if(selectedIndex == 'Daily New Cases'){
-  //    d3.json(file, function(data) {
-        //determine index from JSON corresponding to state name
-        var index = data.findIndex(obj => obj.state==state);
-        for(var i = 0; i < data[index].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_cases[i] }); 
-        }
-   //   });
+  const dataset = [];
+  if(selectedIndex == 'Daily New Cases'){
+    //determine index from JSON corresponding to state name
+    var index = data.findIndex(obj => obj.state==state);
+    for(var i = 0; i < data[index].dates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_cases[i] }); 
     }
-    else if(selectedIndex == 'Daily New Deaths'){
-  //    d3.json(file, function(data) {
-        //determine index from JSON corresponding to state name
-        var index = data.findIndex(obj => obj.state==state);
-        for(var i = 0; i < data[index].dates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_deaths[i] }); 
-        }
-    //    color = "black"
-  //    });
+  }
+  else if(selectedIndex == 'Daily New Deaths'){
+    //determine index from JSON corresponding to state name
+    var index = data.findIndex(obj => obj.state==state);
+    for(var i = 0; i < data[index].dates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].avg_deaths[i] }); 
     }
-    else if(selectedIndex == 'Current Hospitalizations'){
-      var index = data.findIndex(obj => obj.state==state);
-        for(var i = 0; i < data[index].hospDates.length; i++){
-          //pushes date and value into array, similar to x, y coordinates on a graph
-          dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].avg_hospitalizations[i] }); 
-        }
+  }
+  else if(selectedIndex == 'Current Hospitalizations'){
+    var index = data.findIndex(obj => obj.state==state);
+    for(var i = 0; i < data[index].hospDates.length; i++){
+      //pushes date and value into array, similar to x, y coordinates on a graph
+      dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].avg_hospitalizations[i] }); 
     }
+  }
 
-    var w = cellSize*.85,
-        h = cellSize*.85;
-         margin = { top: 10, right: 10, bottom: 0, left: 10 };
+  var w = cellSize*.85,
+      h = cellSize*.85;
+      margin = { top: 10, right: 10, bottom: 0, left: 10 };
 
+    // setting time scale for x axis based on date
+  var xScale = d3.scaleTime()
+    .domain(d3.extent(dataset, function(d) { return d.x; }))
+    .range([0,w]); //taking into account margins
 
-      // setting time scale for x axis based on date
-      var xScale = d3.scaleTime()
-          .domain(d3.extent(dataset, function(d) { return d.x; }))
-          .range([0,w]); //taking into account margins
+  // setting linear scale for y axis based on max value 
+  var yScale = d3.scaleLinear()
+    .domain([0, d3.max(dataset, function (d) { return d.y + 1; })])
+    .range([h, margin.top]);
+    
+  var xAxis = d3.axisBottom(xScale).tickValues([]).tickSizeOuter(0);
+  var yAxis = d3.axisLeft(yScale).tickValues([]);
 
-      // setting linear scale for y axis based on max value 
-      var yScale = d3.scaleLinear()
-          .domain([0, d3.max(dataset, function (d) { return d.y + 1; })])
-          .range([h, margin.top]);
+  const line = d3.line()
+    .x(function(d) { return xScale(d.x) })
+    .y(function(d) { return yScale(d.y) })
+
+  d3.select("svg").append("path")
+    .datum(dataset)
+    .attr("fill", "none")
+    .attr("stroke", color)
+    .attr("stroke-width", 1)
+    .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")  //translate line based on x and y position
+    .attr("d", line)
       
-      var xAxis = d3.axisBottom(xScale).tickValues([]).tickSizeOuter(0);
-      var yAxis = d3.axisLeft(yScale).tickValues([]);
+  const area = d3.area()
+    .x(function(d) { return xScale(d.x); })
+    .y0(h)
+    .y1(function(d) { return yScale(d.y); });
 
-        const line = d3.line()
-          .x(function(d) { return xScale(d.x) })
-          .y(function(d) { return yScale(d.y) })
-
-        d3.select("svg").append("path")
-          .datum(dataset)
-          .attr("fill", "none")
-          .attr("stroke", color)
-          .attr("stroke-width", 1)
-          .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")  //translate line based on x and y position
-          .attr("d", line)
-        
-        const area = d3.area()
-          .x(function(d) { return xScale(d.x); })
-          .y0(h)
-          .y1(function(d) { return yScale(d.y); });
-
-        d3.select("svg").append("path")
-          .datum(dataset)
-          .attr("class", "area")
-          .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")
-          .attr("fill", color)
-          .attr("opacity", "0.2")
-          .attr("cursor", "pointer")
-          .on("click", function(d) {
-             popUpGraph(state, color, selectedIndex, data);   
-          })
-          .attr("d", area);
+  d3.select("svg").append("path")
+    .datum(dataset)
+    .attr("class", "area")
+    .attr("transform", "translate(" + [x+margin.left*2,y+margin.top*2] + ")")
+    .attr("fill", color)
+    .attr("opacity", "0.2")
+    .attr("cursor", "pointer")
+    .on("click", function(d) {
+        popUpGraph(state, color, selectedIndex, data);   
+    })
+    .attr("d", area);
 }
-
