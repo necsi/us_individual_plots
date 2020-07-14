@@ -294,7 +294,7 @@ function popUpGraph(stateName, color, selectedIndex, data) {
   modal.style.display = "block";
 
   //setting svg height, width, and margin values
-  var w = width * 0.7,
+  var w = width * 0.8,
       h = height *0.5,
       padding = 45;
 
