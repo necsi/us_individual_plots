@@ -333,10 +333,118 @@ function popUpGraph(stateName, color, selectedIndex, data) {
     yAxisLabel = 'Patients Hospitalized';
     hoverOverText = ' patients in the hospital on ';
   }
+  var x = d3.scaleTime().range([padding, w - padding]);
+  var y = d3.scaleLinear().range([h, padding*0.2]);
+
+  var xAxis = d3.axisBottom()
+    .scale(x)
+    .ticks(d3.timeMonth);
+
+var yAxis = d3.axisLeft()
+    .scale(y)
+    .ticks(5);
+
+  x.domain(d3.extent(dataset, function(d) { return d.x; }));
+  y.domain([0, d3.max(dataset, function(d) { return d.y; })]);
+  g_svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate("+padding*0.5+"," + h + ")")
+      .call(xAxis.ticks(6).tickSize(0));
+     // .call(xAxis);
+
+  g_svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate("+padding*1.5+",0)")
+      .call(yAxis.ticks(null).tickSize(0));
+      //.call(yAxis);
+  // const line = d3.line()
+  // .x(function(d) { return xAxis(d.x) })
+  // .y(function(d) { return yAxis(d.y) })
+
+  g_svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", padding*0.25)
+    .attr("x",0 - (h / 2))
+    .attr("dy", "1em")
+    .style("font-size", function(d){
+      if(width < 300 || height < 400){ return "10px"; }
+      else{ return "14px"; }
+    })
+    .style("text-anchor", "middle")
+    .text(yAxisLabel);      
+
   
+  d3.select("#graphTitle").append("text")
+  .attr("transform", "translate(" + (w/2) + " ," + 
+                      (20) + ")")
+  .style("text-anchor", "middle")
+  .text(stateName)
+  .style("font-size", function(d){
+    if(width < 300 || height < 400){ return "16px"; }
+    else{ return "24px"; }
+  });
+
+
+  var div = d3.select("#graphInfo").append("div")
+  .attr("class", "tooltip")
+  .style("position", "absolute")
+  .style("background-color", "white")
+  .style("border", "dotted")
+  .style("border-width", "1px")
+  .style("border-radius", "3px")
+  .style("opacity", 0);
+
+
+
+  g_svg.selectAll(".bar")
+    .data(dataset)
+  .enter().append("rect")
+  .attr("class", "bar")
+  .attr("fill", color)
+  .attr("opacity", "0.3")
+  .attr("transform", "translate("+padding*0.5+",0)")
+  .attr("x", function(d) { return x(d.x); })
+  .attr("width", w/dataset.length)
+  .attr("y", function(d) { return y(d.y); })
+  .attr("height", function(d) { return h - y(d.y); })
+  .on('mouseover', function (d, i) {
+    d3.select(this).transition()
+      .duration('100')
+      .attr("opacity", "0.7")
+    div.transition()
+      .duration(100)
+      .style("opacity", 1);
+    div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
+      .style("font-size", "12px")
+      .style("left",(d3.mouse(this)[0]+90) + "px")
+      .style("top", (d3.mouse(this)[1]) + "px")
+      .style("padding", "3px")
+      .style("padding-bottom", "15px");        
+    })
+    .on('mouseout', function (d, i) {
+      d3.select(this).transition()
+        .duration('200')
+        .attr("opacity", "0.3");
+      div.transition()
+        .duration('200')
+        .style("opacity",0)
+    });
+  
+
+
+
+  // g_svg.append("path")
+  //   .datum(dataset)
+  //   .attr("fill", "none")
+  //   .attr("transform", "translate("+padding*0.5+",0)")
+  //   .attr("stroke", color)
+  //   .attr("stroke-width", 1)
+  //   .attr("d", line);
+
+
   //opening json file to read data only from the selected index 
     // setting time scale for x axis based on dates  
-  var xScale = d3.scaleTime()
+  /*var xScale = d3.scaleTime()
     .domain(d3.extent(dataset, function(d) { return d.x; }))
     .range([padding, w - padding]); //taking into account margins
 
@@ -477,7 +585,7 @@ function popUpGraph(stateName, color, selectedIndex, data) {
         div.transition()
           .duration('200')
           .style("opacity", 0);
-      });
+      });*/
 }
 
 /*
