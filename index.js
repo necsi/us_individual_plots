@@ -131,8 +131,9 @@ function ready(error, data, links, jsonData, selectedIndex) {
   states.enter()
     .append("rect")
     .attr("class", function(d) {
-      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-     // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+      //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+
         var square = d3.select(this);
         square.style("fill", "#f2f2f3")
       }
@@ -147,8 +148,8 @@ function ready(error, data, links, jsonData, selectedIndex) {
       var square = d3.select(this);
       square.classed("active", !square.classed("active"));
       if (square.classed("active")) {  
-        if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Florida' && d.state != 'Kansas' && d.state != 'Hawaii')){
-        //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+       // if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Florida' && d.state != 'Kansas' && d.state != 'Hawaii')){
+        if(selectedIndex != 'Current Hospitalizations' || (d.state != 'Kansas' && d.state != 'Hawaii')){
           let color = getColor(d.state); //determines appropriate color based on id 
           popUpGraph(d.state, color, selectedIndex, jsonData);      
         }                       
@@ -194,8 +195,8 @@ function ready(error, data, links, jsonData, selectedIndex) {
       else{ return "12px" }
     })
     .text(function(d) { 
-      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-      //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
+      // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
         return "Not"; 
       }
       else return;
@@ -221,9 +222,8 @@ function ready(error, data, links, jsonData, selectedIndex) {
       else{ return "12px" }
     })
     .text(function(d) { 
-      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
-      //if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
-
+      // if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Florida' || d.state == 'Kansas' || d.state == 'Hawaii')){
+      if(selectedIndex == 'Current Hospitalizations' && (d.state == 'Kansas' || d.state == 'Hawaii')){
         return "Reported"; 
       }
       else return;
@@ -310,155 +310,44 @@ function popUpGraph(stateName, color, selectedIndex, data) {
       dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_cases[i] }); 
     }
     yAxisLabel = 'Daily New Cases';
-    hoverOverText = ' new cases on ';
+    hoverOverText = 'New Cases : ';
   }
   else if(selectedIndex == 'Daily New Deaths'){
     //determine index from JSON corresponding to state name
     var index = data.findIndex(obj => obj.state==stateName);
-    // state = data[selectedIndex].state;
     for(var i = 0; i < data[index].dates.length; i++){
       //pushes date and value into array, similar to x, y coordinates on a graph
       dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
     }
-    yAxisLabel = 'Daily New Deaths';
-    hoverOverText = ' new deaths on ';
+    yAxisLabel = ' New Deaths : ';
+    hoverOverText = 'Daily New deaths: ';
   }
   else if(selectedIndex == 'Current Hospitalizations'){
     //determine index from JSON corresponding to state name
     var index = data.findIndex(obj => obj.state==stateName);
-    for(var i = 0; i < data[index].hospDates.length; i++){
+    //iterates backwards, since hospitalization data is from most recent to oldest
+    for(var i = data[index].hospDates.length-1; i >=0; i--){
       //pushes date and value into array, similar to x, y coordinates on a graph
       dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].hospDates[i]), y : data[index].new_hospitalizations[i] }); 
     }
     yAxisLabel = 'Patients Hospitalized';
-    hoverOverText = ' patients in the hospital on ';
+    hoverOverText = 'Hopsitalizations: ';
   }
-  var x = d3.scaleTime().range([padding, w - padding]);
-  var y = d3.scaleLinear().range([h, padding*0.2]);
 
-  var xAxis = d3.axisBottom()
-    .scale(x)
-    .ticks(d3.timeMonth);
-
-var yAxis = d3.axisLeft()
-    .scale(y)
-    .ticks(5);
-
-  x.domain(d3.extent(dataset, function(d) { return d.x; }));
-  y.domain([0, d3.max(dataset, function(d) { return d.y; })]);
-  g_svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate("+padding*0.5+"," + h + ")")
-      .call(xAxis.ticks(6).tickSize(0));
-     // .call(xAxis);
-
-  g_svg.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate("+padding*1.5+",0)")
-      .call(yAxis.ticks(null).tickSize(0));
-      //.call(yAxis);
-  // const line = d3.line()
-  // .x(function(d) { return xAxis(d.x) })
-  // .y(function(d) { return yAxis(d.y) })
-
-  g_svg.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", padding*0.25)
-    .attr("x",0 - (h / 2))
-    .attr("dy", "1em")
-    .style("font-size", function(d){
-      if(width < 300 || height < 400){ return "10px"; }
-      else{ return "14px"; }
-    })
-    .style("text-anchor", "middle")
-    .text(yAxisLabel);      
-
-  
-  d3.select("#graphTitle").append("text")
-  .attr("transform", "translate(" + (w/2) + " ," + 
-                      (20) + ")")
-  .style("text-anchor", "middle")
-  .text(stateName)
-  .style("font-size", function(d){
-    if(width < 300 || height < 400){ return "16px"; }
-    else{ return "24px"; }
-  });
-
-
-  var div = d3.select("#graphInfo").append("div")
-  .attr("class", "tooltip")
-  .style("position", "absolute")
-  .style("background-color", "white")
-  .style("border", "dotted")
-  .style("border-width", "1px")
-  .style("border-radius", "3px")
-  .style("opacity", 0);
-
-
-
-  g_svg.selectAll(".bar")
-    .data(dataset)
-  .enter().append("rect")
-  .attr("class", "bar")
-  .attr("fill", color)
-  .attr("opacity", "0.3")
-  .attr("transform", "translate("+padding*0.5+",0)")
-  .attr("x", function(d) { return x(d.x); })
-  .attr("width", w/dataset.length)
-  .attr("y", function(d) { return y(d.y); })
-  .attr("height", function(d) { return h - y(d.y); })
-  .on('mouseover', function (d, i) {
-    d3.select(this).transition()
-      .duration('100')
-      .attr("opacity", "0.7")
-    div.transition()
-      .duration(100)
-      .style("opacity", 1);
-    div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
-      .style("font-size", "12px")
-      // .style("left",(d3.mouse(this)[0]+90) + "px")
-      // .style("top", (d3.mouse(this)[1]) + "px")
-      .style("left",(d3.event.pageX) + "px")
-      .style("top", (d3.event.pageY) + "px")
-      .style("padding", "3px")
-      .style("padding-bottom", "15px");        
-    })
-    .on('mouseout', function (d, i) {
-      d3.select(this).transition()
-        .duration('200')
-        .attr("opacity", "0.3");
-      div.transition()
-        .duration('200')
-        .style("opacity",0)
-    });
-  
-
-
-
-  // g_svg.append("path")
-  //   .datum(dataset)
-  //   .attr("fill", "none")
-  //   .attr("transform", "translate("+padding*0.5+",0)")
-  //   .attr("stroke", color)
-  //   .attr("stroke-width", 1)
-  //   .attr("d", line);
-
-
-  //opening json file to read data only from the selected index 
-    // setting time scale for x axis based on dates  
-  /*var xScale = d3.scaleTime()
+  // setting time scale for x axis based on dates  
+  var xScale = d3.scaleTime()
     .domain(d3.extent(dataset, function(d) { return d.x; }))
     .range([padding, w - padding]); //taking into account margins
 
   // setting linear scale for y axis based on max value 
   var yScale = d3.scaleLinear()
     .domain([0, d3.max(dataset, function (d) { return d.y; })])
-    .range([h, padding*0.2]);
+    .range([h, padding]);
 
   var xAxis = d3.axisBottom(xScale).ticks(d3.timeMonth);
   var yAxis = d3.axisLeft(yScale).ticks(5);
 
-    //draw x axis in modal
+  //draw x axis in modal
   g_svg.append("g")
     .attr("transform", "translate("+padding*0.5+"," + (h) + ")")
     .call(xAxis)
@@ -468,7 +357,7 @@ var yAxis = d3.axisLeft()
     .attr("transform", "rotate(-45)")
     .style("text-anchor", "end");
 
-    //draw y axis in modal
+  //draw y axis in modal
   g_svg.append("g")
     .attr("transform", "translate("+padding*1.5+",0)")
     .call(yAxis);
@@ -478,56 +367,40 @@ var yAxis = d3.axisLeft()
     .attr("y", padding*0.25)
     .attr("x",0 - (h / 2))
     .attr("dy", "1em")
-    .style("font-size", function(d){
-      if(width < 300 || height < 400){ return "10px"; }
-      else{ return "14px"; }
-    })
+    .style("font-size", "14px")
     .style("text-anchor", "middle")
     .text(yAxisLabel);      
 
-  
-  d3.select("#graphTitle").append("text")
-  .attr("transform", "translate(" + (w/2) + " ," + 
+  //add title to graph
+  g_svg.append("text")     
+    .attr("transform",
+          "translate(" + (w/2) + " ," + 
                       (20) + ")")
-  .style("text-anchor", "middle")
-  .text(stateName)
-  .style("font-size", function(d){
-    if(width < 300 || height < 400){ return "16px"; }
-    else{ return "24px"; }
-  });
-      
-    // //add title to graph
-    // g_svg.append("text")     
-    //   .attr("transform",
-    //           "translate(" + (w/2) + " ," + 
-    //                       (10) + ")")
-    //   .style("text-anchor", "middle")
-    //   .text(stateName)
-    //   //.style("font-size", "24px")
-    //   .style("font-size", function(d){
-    //     if(width < 300 || height < 400){
-    //       return "16px";
-    //     }
-    //     else{
-    //       return "24px";
-    //     }
-    //   })
-    //   .style("fill", "#696969");    
-    
-  
-    //draw line and path 
-  const line = d3.line()
-    .x(function(d) { return xScale(d.x) })
-    .y(function(d) { return yScale(d.y) })
+    .style("text-anchor", "middle")
+    .text(stateName)
+    .style("font-size", "24px")
+    .style("fill", "#696969");    
+
+
+  var line = d3.line()
+    .x(function(d) {
+      return xScale(d.x);
+    })
+    .y(function(d) {
+      return yScale(d.y);
+    });
+
+  var bisectDate = d3.bisector(function(d) { return d.x; }).left;
 
   g_svg.append("path")
     .datum(dataset)
+    .attr("class", "line")
     .attr("fill", "none")
-    .attr("transform", "translate("+padding*0.5+",0)")
     .attr("stroke", color)
     .attr("stroke-width", 1)
-    .attr("d", line)
-      
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("d", line);
+
   const area = d3.area()
     .x(function(d) { return xScale(d.x); })
     .y0(h)
@@ -542,52 +415,69 @@ var yAxis = d3.axisLeft()
     .attr("cursor", "pointer")
     .attr("d", area);
 
+  var focus = g_svg.append("g")
+    .attr("class", "focus")
+    .style("display", "none");
 
-  var div = d3.select("#graphInfo").append("div")
+  focus.append("circle")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("fill", color)
+    .attr("r", 5);
+
+  focus.append("rect")
+    .attr("transform", "translate("+padding*0.5+",0)")
     .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("background-color", "white")
-    .style("border", "dotted")
-    .style("border-width", "1px")
-    .style("border-radius", "3px")
-    .style("opacity", 0);
+    .attr("width", 160)
+    .attr("height", 50)
+    .attr("x", 10)
+    .attr("y", -22)
+    .attr("rx", 4)
+    .attr("ry", 4);
 
-  //place dots to represent all x y coordinates 
-  g_svg
-    .append("g")
-    .selectAll("dot")
-    .data(dataset)
-    .enter()
-    .append("circle")
-      .attr("cx", function(d) { return xScale(d.x) } )
-      .attr("cy", function(d) { return yScale(d.y) } )
-      .attr("r", 2)
-      .attr("fill", color)
-      .attr("transform", "translate("+padding*0.5+",0)")
+  focus.append("text")
+    .attr("class", "tooltip-date")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("x", 18)
+    .attr("y", -2);
 
-     //interactive feature to see new cases/deaths/hosps per day
-    .on('mouseover', function (d, i) {
-      d3.select(this).transition()
-        .duration('100')
-        .attr("r", 7);
-      div.transition()
-        .duration(100)
-        .style("opacity", 1);
-      div.html((Math.round(d.y))+ hoverOverText + d3.timeFormat("%B %d")(d.x))
-        .style("font-size", "12px")
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY) + "px")
-        .style("padding", "3px")
-        .style("padding-bottom", "15px");        
-      })
-      .on('mouseout', function (d, i) {
-        d3.select(this).transition()
-          .duration('200')
-          .attr("r", 2);
-        div.transition()
-          .duration('200')
-          .style("opacity", 0);
-      });*/
+  focus.append("text")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("x", 18)
+    .attr("y", 18)
+    .text(hoverOverText);
+
+  focus.append("text")
+    .attr("transform", "translate("+padding*0.5+",0)")
+    .attr("class", "tooltip-info")
+    .attr("x", 125)
+    .attr("y", 18);
+
+  g_svg.append("rect")
+    .attr("class", "overlay")
+    .attr("fill", "none")
+    .attr("width", w)
+    .attr("height", h)
+    .on("mouseover", function() { focus.style("display", null); })
+    .on("mouseout", function() { focus.style("display", "none"); })
+    .on("mousemove", mousemove);
+
+  function mousemove() {
+    var x0;
+    if(xScale.invert(d3.mouse(this)[0]) > dataset[dataset.length-1].x){
+      x0 = dataset[dataset.length-1].x;
+    }
+    else{
+      x0 = xScale.invert(d3.mouse(this)[0]);
+    }
+    var i = bisectDate(dataset, x0, 1),
+      d0 = dataset[i - 1],
+      d1 = dataset[i],
+      d = x0 - d0.x > d1.x - x0 ? d1 : d0;
+      
+    focus.attr("transform", "translate(" + xScale(d.x) + "," + yScale(d.y) + ")");
+    focus.select(".tooltip-date").text(d3.timeFormat("%B %d")(d.x));
+    focus.select(".tooltip-info").text((d.y));
+  }
 }
 
 /*
