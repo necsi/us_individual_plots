@@ -320,7 +320,7 @@ function popUpGraph(stateName, color, selectedIndex, data) {
       dataset.push({ x : d3.timeParse("%Y-%m-%d")(data[index].dates[i]), y : data[index].new_deaths[i] }); 
     }
     yAxisLabel = ' New Deaths : ';
-    hoverOverText = 'Daily New deaths: ';
+    hoverOverText = 'New Deaths: ';
   }
   else if(selectedIndex == 'Current Hospitalizations'){
     //determine index from JSON corresponding to state name
@@ -427,8 +427,10 @@ function popUpGraph(stateName, color, selectedIndex, data) {
   focus.append("rect")
     .attr("transform", "translate("+padding*0.5+",0)")
     .attr("class", "tooltip")
-    .attr("width", 160)
-    .attr("height", 50)
+    // .attr("width", 160)
+    .attr("width", 120)
+    .attr("height", 70)
+    // .attr("height", 50)
     .attr("x", 10)
     .attr("y", -22)
     .attr("rx", 4)
@@ -449,8 +451,8 @@ function popUpGraph(stateName, color, selectedIndex, data) {
   focus.append("text")
     .attr("transform", "translate("+padding*0.5+",0)")
     .attr("class", "tooltip-info")
-    .attr("x", 125)
-    .attr("y", 18);
+    .attr("x", 18)
+    .attr("y", 35);
 
   g_svg.append("rect")
     .attr("class", "overlay")
