@@ -6,8 +6,8 @@
 //            https://bl.ocks.org/Fil/dd3ea32358401e60d8898b5524a71118 for mouseover points      
 
 var margin = {top: 50, right: 0, bottom: 50, left: 30},
-    width = 300 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    width = 225 - margin.left - margin.right,
+    height = 225 - margin.top - margin.bottom;
  
 //Read the data from csv file
 d3.csv("./result.csv", function(data) {
@@ -56,6 +56,7 @@ d3.csv("./result.csv", function(data) {
   svg
     .append("g")
     .attr("transform", "translate(0," + height + ")")
+    .style("font-size", "8px")
     .call(d3.axisBottom(x).ticks(d3.timeMonth));  // plotting x axis for each svg plot
   svg
     .append("path") // plotting line for each svg plot
