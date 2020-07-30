@@ -8,7 +8,7 @@
 var margin = {top: 50, right: 0, bottom: 50, left: 30},
     width = 300 - margin.left - margin.right,
     height = 300 - margin.top - margin.bottom;
-
+ 
 //Read the data from csv file
 d3.csv("./result.csv", function(data) {
   var dataOrganized = d3.nest() // organize all data by state 
