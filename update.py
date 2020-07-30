@@ -210,3 +210,29 @@ with open('USStateColors.csv', 'w', newline='') as file:
     writer.writeheader()
     for i in range(len(province)):
         writer.writerow({'state': province[i], 'color': setColors[i]})
+
+
+
+stateNames = []
+dates_vals = []
+new_cases_vals = []
+avg_cases_vals = []
+
+with open('./result.json') as f:
+    data = json.load(f)
+    for i in data:
+        stateNames.append(i['state'])
+        dates_vals.append(i['dates'])
+        new_cases_vals.append(i['new_cases'])
+        avg_cases_vals.append(i['avg_cases'])
+
+with open('result.csv', 'w', newline='') as csv_file:
+    fieldnames = ['state', 'date','new_cases','avg_cases', 'color']
+    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    writer.writeheader()
+    for i in range(len(stateNames)):
+        for m in range(len(province)):
+            if(stateNames[i] == province[m]):
+                color = setColors[i]
+        for x in range(len(dates_vals[i])):
+            writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'color': color})
