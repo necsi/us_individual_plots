@@ -6,8 +6,8 @@
 //            https://bl.ocks.org/Fil/dd3ea32358401e60d8898b5524a71118 for mouseover points  
 
 var margin = {top: 50, right: 0, bottom: 50, left: 30},
-    width = 200 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
+    width = 175 - margin.left - margin.right,
+    height = 175 - margin.top - margin.bottom;
  
 //Read the data from csv file
 // d3.csv("./result.csv", function(data) {
