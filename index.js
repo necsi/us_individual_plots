@@ -1,7 +1,7 @@
 // Created by Era Iyer
 // July 2020
 // index.js file
-// generates state line chart with interactive component using d3 library 
+// generates state green line chart with interactive component using d3 library 
 // resources: https://www.d3-graph-gallery.com/graph/line_smallmultiple.html for small multiple line chart
 //            https://bl.ocks.org/Fil/dd3ea32358401e60d8898b5524a71118 for mouseover points      
 
@@ -10,11 +10,19 @@ var margin = {top: 50, right: 0, bottom: 50, left: 30},
     height = 225 - margin.top - margin.bottom;
  
 //Read the data from csv file
-d3.csv("./result.csv", function(data) {
-  var dataOrganized = d3.nest() // organize all data by state 
-    .key(function(d) { return d.state;})  // keys are states, values are the data associated w the state
-    .entries(data);
+// d3.csv("./result.csv", function(data) {
+  d3.csv("./result.csv", function(dataset) {
 
+  var data = [];  // storing based on color 
+  for(var i = 0; i < dataset.length; i++){
+    if(dataset[i].color == 'green'){
+      data.push(dataset[i]);
+    }
+  }
+  var dataOrganized = d3.nest() // organize all data by state 
+    .key(function(d) { if(d.color == 'green'){ return d.state;}})  // keys are states, values are the data associated w the state
+    .entries(data);
+    //console.log(data);
   //all x axis scales are the same 
   var x = d3.scaleTime()
     .domain(d3.extent(data, function(d) { return d3.timeParse("%Y-%m-%d")(d.date); }))
