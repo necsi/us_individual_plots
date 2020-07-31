@@ -1,4 +1,4 @@
-// Created by Era Iyer
+// Created by Era Iyer 
 // July 2020
 // index.js file
 // generates state green line chart with interactive component using d3 library 
