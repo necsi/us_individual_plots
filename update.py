@@ -42,6 +42,7 @@ us_states_codes = ["AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "
 new_hospitalizations = []
 stateIDs = []
 datesHospitalizations = []
+total_cases_all = []
 
 url = "https://covidtracking.com/api/v1/states/daily.csv"
 data = pd.read_csv(url)
@@ -136,12 +137,15 @@ for idx, val in enumerate(us_states):
     state_dict["avg_hospitalizations"] = moving_averages_list
 
     arr.append(state_dict)
-
+    #stores latest total cases for each state 
+    if len(total_cases_state) > 0:
+        total_cases_all.append(total_cases_state[len(total_cases_state)-1])
+    else:
+        total_cases_all.append(0)
 
 #result.json stores the states, dates, and corresponding values
 with open('result.json', 'w') as fp:
     json.dump(arr, fp)
-
 
 #parallel arrays to store json information 
 province = []
@@ -227,12 +231,15 @@ with open('./result.json') as f:
         avg_cases_vals.append(i['avg_cases'])
 
 with open('result.csv', 'w', newline='') as csv_file:
-    fieldnames = ['state', 'date','new_cases','avg_cases', 'color']
+    fieldnames = ['state', 'date','new_cases','avg_cases', 'total_cases', 'color']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
     for i in range(len(stateNames)):
         for m in range(len(province)):
             if(stateNames[i] == province[m]):
                 color = setColors[i]
+        for n in range(len(us_states)):
+            if(stateNames[i] == us_states[n]):
+                state_total_cases = total_cases_all[n]
         for x in range(len(dates_vals[i])):
-            writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'color': color})
+            writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'total_cases': state_total_cases, 'color': color})
