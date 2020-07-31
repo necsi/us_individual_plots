@@ -65,7 +65,7 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     .append("g")
     .attr("transform", "translate(0," + height + ")")
     .style("font-size", "8px")
-    .call(d3.axisBottom(x).ticks(d3.timeMonth));  // plotting x axis for each svg plot
+    .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%b"))); // plotting x axis for each svg plot
   svg
     .append("path") // plotting line for each svg plot
     .attr("fill", "none")
@@ -93,7 +93,7 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     // creates box to hold text 
     focus.append("rect")
       .attr("class", "tooltip")
-      .attr("width", 100)
+      .attr("width", 90)
       .attr("height", 45)
       .attr("x", -50)
       .attr("y", -55)
