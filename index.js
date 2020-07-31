@@ -5,8 +5,8 @@
 // resources: https://www.d3-graph-gallery.com/graph/line_smallmultiple.html for small multiple line chart
 //            https://bl.ocks.org/Fil/dd3ea32358401e60d8898b5524a71118 for mouseover points  
 
-var margin = {top: 50, right: 0, bottom: 50, left: 30},
-    width = 175 - margin.left - margin.right,
+var margin = {top: 50, right: 0, bottom: 50, left: 10},
+    width = 150 - margin.left - margin.right,
     height = 175 - margin.top - margin.bottom;
  
 //Read the data from csv file
