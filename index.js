@@ -144,7 +144,7 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     .text(function(d){ return(d.key)})
     .style("fill", "black");
 
-    // state titles
+    // total cases title
     svg
     .append("text")
     .style("font-size", "10px")
@@ -154,7 +154,7 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     .text(function(d){ return("Total Cases: "+d.values[0].total_cases)})
     .style("fill", "grey");
   
-    // state titles
+    // recent/new day title
     svg
     .append("text")
     .style("font-size", "10px")
