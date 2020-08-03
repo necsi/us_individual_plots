@@ -5,9 +5,9 @@
 // resources: https://www.d3-graph-gallery.com/graph/line_smallmultiple.html for small multiple line chart
 //            https://bl.ocks.org/Fil/dd3ea32358401e60d8898b5524a71118 for mouseover points  
 
-var margin = {top: 50, right: 0, bottom: 50, left: 10},
-    width = 150 - margin.left - margin.right,
-    height = 175 - margin.top - margin.bottom;
+var margin = {top: 50, right: 0, bottom: 50, left: 35},
+    width = 175 - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
  
 //Read the data from csv file
 // d3.csv("./result.csv", function(data) {
@@ -85,7 +85,6 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     var focus = svg.append("g")
       .attr("class", "focus")
       .style("display", "none");
-    
     // creates dot to follow over paths 
     focus.append("circle")
       .attr("fill", function(d) {return (d.values[0].color);})
@@ -94,9 +93,9 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     // creates box to hold text 
     focus.append("rect")
       .attr("class", "tooltip")
-      .attr("width", 90)
+      .attr("width", 85)
       .attr("height", 45)
-      .attr("x", -50)
+      .attr("x", -45)
       .attr("y", -55)
       .attr("rx", 4)
       .attr("ry", 4);
@@ -107,12 +106,17 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
         
     focus.append("text")
       .attr("class", "tooltip-date")
-      .attr("x", -40)
+      .attr("x", -43)
+      .attr("y", -45);
+
+    focus.append("text")
+      .attr("class", "tooltip-info-avg")
+      .attr("x", -43)
       .attr("y", -30);
 
     focus.append("text")
-      .attr("class", "tooltip-info")
-      .attr("x", -40)
+      .attr("class", "tooltip-info-new")
+      .attr("x", -43)
       .attr("y", -15);
 
     svg.append("rect")
@@ -131,7 +135,8 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
         var curr_date = (d3.timeParse("%Y-%m-%d")(d.date));
         focus.attr("transform", "translate(" + x(d3.timeParse("%Y-%m-%d")(d.date)) + "," + ty(+d.avg_cases) + ")");
         focus.select(".tooltip-date").text(d3.timeFormat("%B %d")(curr_date));
-        focus.select(".tooltip-info").text(+d.new_cases + " new cases");
+        focus.select(".tooltip-info-avg").text(Math.round(+d.avg_cases) + " recent/new day");
+        focus.select(".tooltip-info-new").text(+d.new_cases + " new cases");
       });
   })
 
@@ -161,6 +166,6 @@ var margin = {top: 50, right: 0, bottom: 50, left: 10},
     .attr("text-anchor", "middle")
     .attr("transform",
           "translate(" + ((width-margin.left)/2) + " ," + (height+47) + ")") //centers titles
-    .text(function(d){ return("Recent/New Day: "+ d.values[d.values.length-1].new_cases)})
+    .text(function(d){ return("Recent/New Day: "+ Math.round(d.values[d.values.length-1].avg_cases))})
     .style("fill", "grey");
 })

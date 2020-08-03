@@ -4,19 +4,11 @@
   }
   
   .focus text {
-    font-size: 12px;
+    font-size: 10px;
   }
   
   .tooltip {
     fill: white;
     stroke: #000;
-  }
-  
-  .tooltip-date, .tooltip-info {
-    font-weight: bold;
-  }
-
-  .focus{
-    z-index: 1000000;
   }
   
