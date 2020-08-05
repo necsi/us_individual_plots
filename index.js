@@ -93,7 +93,7 @@ var margin = {top: 50, right: 20, bottom: 50, left: 20},
     // creates box to hold text 
     focus.append("rect")
       .attr("class", "tooltip")
-      .attr("width", 75)
+      .attr("width", 65)
       .attr("height", 45)
       .attr("x", -25)
       .attr("y", -55)
