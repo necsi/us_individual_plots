@@ -179,6 +179,23 @@ for i in range(len(all_moving_averages)):
             max = all_moving_averages[i][j]
     peakCases.append(max)
 
+all_recent_new = []
+
+for i in range(len(values)):
+    state_recent_new = []
+    for j in range(len(values[i])):
+        end = values[i][j]
+        if(j < 6):
+            start = 0
+            recent_avg = end
+        else:
+            start = values[i][j-6]
+            sum = 0
+            sum += values[i][j-6]+values[i][j-5]+values[i][j-4]+values[i][j-3]+values[i][j-2]+values[i][j-1]+values[i][j]
+            recent_avg = sum/daysToAverage
+        state_recent_new.append(recent_avg)
+    all_recent_new.append(state_recent_new)
+
 #simplifies values array to hold just values from the past week (per province/state)
 for k in range(len(values)):
     #gets values from last 7 days 
@@ -231,7 +248,7 @@ with open('./result.json') as f:
         avg_cases_vals.append(i['avg_cases'])
 
 with open('result.csv', 'w', newline='') as csv_file:
-    fieldnames = ['state', 'date','new_cases','avg_cases', 'total_cases', 'color']
+    fieldnames = ['state', 'date','new_cases','avg_cases', 'total_cases', 'recent_new', 'color']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
     for i in range(len(stateNames)):
@@ -242,4 +259,6 @@ with open('result.csv', 'w', newline='') as csv_file:
             if(stateNames[i] == us_states[n]):
                 state_total_cases = total_cases_all[n]
         for x in range(len(dates_vals[i])):
-            writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'total_cases': state_total_cases, 'color': color})
+            if dates_vals[i][x] >= '2020-02-29':
+                writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'total_cases': state_total_cases, 'recent_new': all_recent_new[i][x], 'color': color})
+            # writer.writerow({'state': stateNames[i], 'date': dates_vals[i][x], 'new_cases': new_cases_vals[i][x], 'avg_cases': avg_cases_vals[i][x], 'total_cases': state_total_cases, 'color': color})
