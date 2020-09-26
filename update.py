@@ -217,7 +217,8 @@ for i in range(len(allWeekValues)):
         sum += allWeekValues[i][k]
     average = sum/daysToAverage
 
-    if((average < (N0 * F0)) or ((average < N0) and (average < (peakCases[i]*F0)))):
+    # if((average < (N0 * F0)) or ((average < N0) and (average < (peakCases[i]*F0)))):
+    if(average < N0):
         setColors.append(colors[0])
     elif(((average < (1.5*N0)) and (average < (peakCases[i]*F0))) or (average < (peakCases[i]*F1))):
          setColors.append(colors[1])
