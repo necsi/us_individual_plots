@@ -109,6 +109,8 @@ for idx, val in enumerate(us_states):
         #special case, fixing error from Michigan data on 6/5
         if state_dict["state"] == 'Michigan' and state_dict["dates"][i] == '2020-06-05':
             new_cases = 284
+        if state_dict["state"] == 'North Carolina' and state_dict["dates"][i] == '2020-09-25':
+            new_cases = 1693
         state_dict["new_cases"].append(new_cases)
     # for i, death_val in enumerate(state_dict["total_deaths"]): 
     for i, death_val in enumerate(total_deaths_state): 
