@@ -12,12 +12,12 @@ Delaware,red
 Florida,red
 Georgia,red
 Guam,green
-Hawaii,orange
+Hawaii,red
 Iowa,orange
 Idaho,orange
 Illinois,orange
 Indiana,orange
-Kansas,red
+Kansas,orange
 Kentucky,red
 Louisiana,red
 Massachusetts,red
@@ -26,7 +26,7 @@ Maine,red
 Michigan,orange
 Minnesota,orange
 Missouri,orange
-Mississippi,orange
+Mississippi,red
 Montana,orange
 North Carolina,red
 North Dakota,orange
@@ -46,11 +46,11 @@ South Carolina,red
 South Dakota,orange
 Tennessee,orange
 Texas,red
-Utah,red
+Utah,orange
 Virginia,red
 Virgin Islands,green
 Vermont,red
 Washington,red
 Wisconsin,orange
-West Virginia,orange
+West Virginia,red
 Wyoming,orange
