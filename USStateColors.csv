@@ -5,7 +5,7 @@ Arkansas,orange
 American Samoa,green
 Arizona,orange
 California,orange
-Colorado,red
+Colorado,orange
 Connecticut,red
 District of Columbia,red
 Delaware,red
@@ -38,11 +38,11 @@ Nevada,orange
 New York,red
 Ohio,orange
 Oklahoma,orange
-Oregon,red
+Oregon,orange
 Pennsylvania,red
 Puerto Rico,orange
 Rhode Island,red
-South Carolina,orange
+South Carolina,red
 South Dakota,orange
 Tennessee,orange
 Texas,red
@@ -50,7 +50,7 @@ Utah,orange
 Virginia,red
 Virgin Islands,green
 Vermont,red
-Washington,red
+Washington,orange
 Wisconsin,orange
-West Virginia,orange
+West Virginia,red
 Wyoming,orange
