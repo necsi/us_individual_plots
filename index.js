@@ -13,14 +13,17 @@ var margin = {top: 50, right: 20, bottom: 50, left: 20},
 // d3.csv("./result.csv", function(data) {
   d3.csv("./result.csv", function(dataset) {
 
+  var url = new URL(window.location);
+  var color = url.searchParams.get("color");
+
   var data = [];  // storing based on color 
   for(var i = 0; i < dataset.length; i++){
-    if(dataset[i].color == 'green'){
+    if(dataset[i].color == color){
       data.push(dataset[i]);
     }
   }
   var dataOrganized = d3.nest() // organize all data by state 
-    .key(function(d) { if(d.color == 'green'){ return d.state;}})  // keys are states, values are the data associated w the state
+    .key(function(d) { if(d.color == color){ return d.state;}})  // keys are states, values are the data associated w the state
     .entries(data);
     //console.log(data);
   //all x axis scales are the same 
