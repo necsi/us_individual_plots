@@ -20,10 +20,10 @@ Indiana,red
 Kansas,red
 Kentucky,red
 Louisiana,red
-Massachusetts,orange
+Massachusetts,red
 Maryland,red
 Maine,red
-Michigan,orange
+Michigan,red
 Minnesota,orange
 Missouri,red
 Mississippi,red
@@ -33,7 +33,7 @@ North Dakota,red
 Nebraska,red
 New Hampshire,red
 New Jersey,orange
-New Mexico,orange
+New Mexico,red
 Nevada,red
 New York,red
 Ohio,red
@@ -41,14 +41,14 @@ Oklahoma,red
 Oregon,red
 Pennsylvania,red
 Puerto Rico,red
-Rhode Island,orange
+Rhode Island,red
 South Carolina,red
 South Dakota,red
 Tennessee,red
 Texas,red
 Utah,red
 Virginia,red
-Virgin Islands,orange
+Virgin Islands,red
 Vermont,red
 Washington,red
 Wisconsin,red
