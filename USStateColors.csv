@@ -10,7 +10,7 @@ Connecticut,orange
 District of Columbia,red
 Delaware,red
 Florida,orange
-Georgia,orange
+Georgia,red
 Guam,red
 Hawaii,orange
 Iowa,red
@@ -20,7 +20,7 @@ Indiana,red
 Kansas,red
 Kentucky,red
 Louisiana,orange
-Massachusetts,orange
+Massachusetts,red
 Maryland,red
 Maine,red
 Michigan,red
@@ -33,7 +33,7 @@ North Dakota,red
 Nebraska,red
 New Hampshire,red
 New Jersey,orange
-New Mexico,orange
+New Mexico,red
 Nevada,red
 New York,red
 Ohio,red
@@ -44,7 +44,7 @@ Puerto Rico,orange
 Rhode Island,orange
 South Carolina,red
 South Dakota,orange
-Tennessee,red
+Tennessee,orange
 Texas,red
 Utah,red
 Virginia,red
