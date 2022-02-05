@@ -8,7 +8,7 @@ California,red
 Colorado,red
 Connecticut,orange
 District of Columbia,orange
-Delaware,red
+Delaware,orange
 Florida,red
 Georgia,red
 Guam,red
@@ -20,7 +20,7 @@ Indiana,red
 Kansas,red
 Kentucky,red
 Louisiana,red
-Massachusetts,red
+Massachusetts,orange
 Maryland,orange
 Maine,red
 Michigan,red
@@ -51,6 +51,6 @@ Virginia,red
 Virgin Islands,orange
 Vermont,red
 Washington,red
-Wisconsin,red
+Wisconsin,orange
 West Virginia,red
 Wyoming,red
