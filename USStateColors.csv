@@ -5,25 +5,25 @@ Arkansas,red
 American Samoa,green
 Arizona,red
 California,red
-Colorado,red
+Colorado,orange
 Connecticut,orange
 District of Columbia,orange
 Delaware,orange
 Florida,red
 Georgia,red
 Guam,red
-Hawaii,red
+Hawaii,orange
 Iowa,red
 Idaho,red
 Illinois,orange
-Indiana,red
-Kansas,red
+Indiana,orange
+Kansas,orange
 Kentucky,red
 Louisiana,red
 Massachusetts,orange
 Maryland,orange
 Maine,red
-Michigan,red
+Michigan,orange
 Minnesota,red
 Missouri,red
 Mississippi,red
@@ -37,13 +37,13 @@ New Mexico,red
 Nevada,orange
 New York,orange
 Ohio,orange
-Oklahoma,red
+Oklahoma,orange
 Oregon,red
-Pennsylvania,red
+Pennsylvania,orange
 Puerto Rico,orange
 Rhode Island,orange
 South Carolina,red
-South Dakota,red
+South Dakota,orange
 Tennessee,red
 Texas,red
 Utah,orange
