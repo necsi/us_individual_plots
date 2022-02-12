@@ -1,6 +1,6 @@
 state,color
 Alaska,red
-Alabama,red
+Alabama,orange
 Arkansas,orange
 American Samoa,green
 Arizona,red
@@ -19,7 +19,7 @@ Illinois,orange
 Indiana,orange
 Kansas,orange
 Kentucky,red
-Louisiana,red
+Louisiana,orange
 Massachusetts,orange
 Maryland,orange
 Maine,red
@@ -28,7 +28,7 @@ Minnesota,red
 Missouri,red
 Mississippi,red
 Montana,red
-North Carolina,red
+North Carolina,orange
 North Dakota,red
 Nebraska,orange
 New Hampshire,red
@@ -42,13 +42,13 @@ Oregon,red
 Pennsylvania,orange
 Puerto Rico,orange
 Rhode Island,orange
-South Carolina,red
+South Carolina,orange
 South Dakota,orange
 Tennessee,red
 Texas,red
 Utah,orange
 Virginia,red
-Virgin Islands,green
+Virgin Islands,orange
 Vermont,orange
 Washington,red
 Wisconsin,orange
