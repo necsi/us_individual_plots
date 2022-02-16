@@ -3,8 +3,8 @@ Alaska,red
 Alabama,orange
 Arkansas,orange
 American Samoa,green
-Arizona,red
-California,red
+Arizona,orange
+California,orange
 Colorado,orange
 Connecticut,orange
 District of Columbia,orange
@@ -31,14 +31,14 @@ Montana,red
 North Carolina,orange
 North Dakota,red
 Nebraska,orange
-New Hampshire,orange
+New Hampshire,red
 New Jersey,orange
 New Mexico,orange
 Nevada,orange
 New York,orange
 Ohio,orange
 Oklahoma,orange
-Oregon,red
+Oregon,orange
 Pennsylvania,orange
 Puerto Rico,orange
 Rhode Island,orange
@@ -47,10 +47,10 @@ South Dakota,orange
 Tennessee,red
 Texas,orange
 Utah,orange
-Virginia,red
+Virginia,orange
 Virgin Islands,orange
 Vermont,orange
 Washington,orange
 Wisconsin,orange
 West Virginia,red
-Wyoming,red
+Wyoming,orange
