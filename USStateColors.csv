@@ -4,7 +4,7 @@ Alabama,orange
 Arkansas,orange
 American Samoa,green
 Arizona,orange
-California,orange
+California,red
 Colorado,orange
 Connecticut,orange
 District of Columbia,orange
@@ -26,7 +26,7 @@ Maine,orange
 Michigan,orange
 Minnesota,orange
 Missouri,orange
-Mississippi,red
+Mississippi,orange
 Montana,orange
 North Carolina,orange
 North Dakota,orange
@@ -42,10 +42,10 @@ Oregon,orange
 Pennsylvania,orange
 Puerto Rico,red
 Rhode Island,orange
-South Carolina,orange
+South Carolina,red
 South Dakota,orange
 Tennessee,orange
-Texas,red
+Texas,orange
 Utah,orange
 Virginia,orange
 Virgin Islands,orange
